@@ -72,9 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalorieCounter.cs" />
-    <Compile Include="hmdDebugging.cs" />
+    <Compile Include="igcv0.2.x.cs" />
     <Compile Include="MenuDisplay.cs" />
-    <Compile Include="MissedCounter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

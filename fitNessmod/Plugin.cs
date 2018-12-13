@@ -8,52 +8,46 @@ using IllusionPlugin;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
-using CustomUI.MenuButton;
 using CustomUI.Settings;
-using CustomUI.Utilities;
-using CustomUI.GameplaySettings;
 
-namespace fitNessmod
+namespace BeFitMod
 {
     public class Plugin : IPlugin
     {
-        public string Name => "fitNessMod";
-        public string Version => "0.2.0"; //Patch 1 Fixed Tutorial Crash
+        public string Name => "BeFitMod";
+        public static string alias = "fitNessMod";
+        public string Version => "0.2.0"; //New Counting Algorithm
         bool enabled = true;
         public static bool safetyEnabled = false;
         private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
-        private int lifeCalories = ModPrefs.GetInt("fitNessMod", "lifeCalories", 0, true);
-        private int dailyCalories = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true);
-        private string rdCals = ModPrefs.GetString("fitNessMod", "date", "dd.MM.yyyy", true);
+        private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
+        private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
+        private string rdCals = ModPrefs.GetString(Plugin.alias, "date", "dd.MM.yyyy", true);
         public static Vector3 counterPosition = new Vector3(-4.25f, 0.5f, 7f);
         MenuDisplay display;
-        hmdDebugging headmovement;
+        igcv02x calCounter;
         public void OnApplicationStart()
         {
             ModPrefs.SetString("fitNessMod", "version", "v " + Version.ToString());
-            ModPrefs.SetInt("fitNessMod", "sessionCalories", 0);
-            Console.WriteLine("[fitNessMod | LOG] Current Session Cals set to 0!");
-            Console.WriteLine("[fitNessMod | LOG] Daily Calories loaded: " + dailyCalories);
-            Console.WriteLine("[fitNessMod | LOG] Life of Mod Calories : " + lifeCalories);
-            Console.WriteLine("[fitNessMod | LOG] Current Date: " + DateTime.Now.ToString("dd.MM.yyyy"));
-            Console.WriteLine("[fitNessMod | LOG] Last Burn Date: " + rdCals);
-            Console.WriteLine("[fitNessMod | LOG] Loaded!");
+            ModPrefs.SetInt(Plugin.alias, "sessionCalories", 0);
+            Console.WriteLine(Plugin.alias + " LOG| Current Session Cals set to 0!");
+            Console.WriteLine(Plugin.alias + " LOG| Daily Calories loaded: " + dailyCalories);
+            Console.WriteLine(Plugin.alias + " LOG| Life of Mod Calories : " + lifeCalories);
+            Console.WriteLine(Plugin.alias + " LOG| Current Date: " + DateTime.Now.ToString("dd.MM.yyyy"));
+            Console.WriteLine(Plugin.alias + " LOG| Last Burn Date: " + rdCals);
+            Console.WriteLine(Plugin.alias + " LOG| " + Name + Version);
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            //calCount = null;
-            //calCount = new GameObject("CalorieCounter").AddComponent<CalorieCounter>();
-
-            if (!enabled || safetyEnabled) return;
-            
+            if (!enabled || safetyEnabled) return;  
             if (arg1.name == "GameCore") {  //Launch calories counter
-                Console.WriteLine("[fitNessMod | LOG] Scene Loaded succesfully");
-                headmovement = null;
-                headmovement = new GameObject("hmdDebugging").AddComponent<hmdDebugging>();
-                Console.WriteLine("[fitNessMod | LOG] calorie counter loaded!");
+                Console.WriteLine(Plugin.alias + " LOG|  Scene Loaded succesfully");
+                calCounter = null;
+                calCounter = new GameObject("hmdDebugging").AddComponent<igcv02x>();
+                Console.WriteLine(Plugin.alias + " LOG|  calorie counter loaded!");
             }
             if(arg1.name == "Menu")
             {
@@ -74,50 +68,63 @@ namespace fitNessmod
                 return;
             }
             else { safetyEnabled = false; } //Enable Mod
-            if (arg0.name == "Menu") //On menu == display. HealthWarning used for layout setup. Will be removed later.
+            if (arg0.name == "Menu" && !safetyEnabled)
             {
+                SubMenu befitSettings = SettingsUI.CreateSubMenu("BeFit Menu"); //////// Submenu Created //////////
+                SubMenu befitStats = SettingsUI.CreateSubMenu("Fitness Statistics"); //////// Statistics Page Created ////////
+
+                IntViewController cbAllTime = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
+                cbAllTime.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true); };
                 
+                IntViewController cbCurSession = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
+                cbCurSession.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true); };
+                IntViewController cbDate = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
+                cbDate.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true); };
 
-                SubMenu settingsSubmenu = SettingsUI.CreateSubMenu("BeFit Menu");
 
-                bool lbsorkgs = ModPrefs.GetBool("fitNessMod", "lbskgs", false, true);
+
+                bool lbsorkgs = ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true);
                 if (lbsorkgs)
                 {
-                    IntViewController weightKGS = settingsSubmenu.AddInt("Weight in Kilo Grams", 36, 363, 1);
-                    weightKGS.GetValue += delegate { return ModPrefs.GetInt("fitNessMod", "weightLBS", (int) (60 * 2.2046f), true);
+                    IntViewController weightKGS = befitSettings.AddInt("Weight in Kilo Grams", 36, 363, 1);
+                    weightKGS.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "weightLBS", (int) (60 * 2.2046f), true);
                     };
-                    weightKGS.SetValue += delegate (int kgs) { ModPrefs.SetInt("fitNessMod", "weightLBS", (int) (kgs * 2.2046f)); };
+                    weightKGS.SetValue += delegate (int kgs) { ModPrefs.SetInt(Plugin.alias, "weightLBS", (int) (kgs * 2.2046f)); };
+
+                    IntViewController allTimeLBSburned = befitStats.AddInt("Kilo Grams burned ", 0, Int32.MaxValue, 0);
+                    allTimeLBSburned.GetValue += delegate { return (int)(((ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true)) * 2.204623f) /7700); };
                 }
                 else
                 {
-                    IntViewController weightLBS = settingsSubmenu.AddInt("Weight in lbs", 80, 800, 2);
-                    weightLBS.GetValue += delegate { return ModPrefs.GetInt("fitNessMod", "weightLBS", 132, true); };
-                    weightLBS.SetValue += delegate (int lbs) { ModPrefs.SetInt("fitNessMod", "weightLBS", lbs); };
+                    IntViewController weightLBS = befitSettings.AddInt("Weight in lbs", 80, 800, 2);
+                    weightLBS.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true); };
+                    weightLBS.SetValue += delegate (int lbs) { ModPrefs.SetInt(Plugin.alias, "weightLBS", lbs); };
+
+                    IntViewController allTimeLBSburned = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
+                    allTimeLBSburned.GetValue += delegate { return (ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true)) / 3500; };
                 }
-
-
-                
-                BoolViewController viewDaily = settingsSubmenu.AddBool("Show Daily Calories Burned");
-                viewDaily.GetValue += delegate { return ModPrefs.GetBool("fitNessModd", "dcv", true, true); };
-                viewDaily.SetValue += delegate (bool dcv) { ModPrefs.SetBool("fitNessModd", "dcv", dcv);
+                ////Daily
+                BoolViewController viewDaily = befitSettings.AddBool("Show Daily Calories Burned");
+                viewDaily.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "dcv", true, true); };
+                viewDaily.SetValue += delegate (bool dcv) { ModPrefs.SetBool(Plugin.alias, "dcv", dcv);
                     MenuDisplay.visibleDailyCalories = dcv;
                 };
-
-                BoolViewController viewCurrent = settingsSubmenu.AddBool("Show Current Session Calories Burned");
-                viewCurrent.GetValue += delegate { return ModPrefs.GetBool("fitNessModd", "csv", true, true); };
-                viewCurrent.SetValue += delegate (bool csv) { ModPrefs.SetBool("fitNessModd", "csv", csv);
+                ////Current
+                BoolViewController viewCurrent = befitSettings.AddBool("Show Current Session Calories Burned");
+                viewCurrent.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "csv", true, true); };
+                viewCurrent.SetValue += delegate (bool csv) { ModPrefs.SetBool(Plugin.alias, "csv", csv);
                     MenuDisplay.visibleCurrentCalories = csv;
                 };
-
-                BoolViewController viewLife = settingsSubmenu.AddBool("Show All Calories Burned");
-                viewLife.GetValue += delegate { return ModPrefs.GetBool("fitNessModd", "lcv", true, true); };
-                viewLife.SetValue += delegate (bool lcv) { ModPrefs.SetBool("fitNessModd", "lcv", lcv);
+                ////All
+                BoolViewController viewLife = befitSettings.AddBool("Show All Calories Burned");
+                viewLife.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "lcv", false, true); };
+                viewLife.SetValue += delegate (bool lcv) { ModPrefs.SetBool(Plugin.alias, "lcv", lcv);
                     MenuDisplay.visibleLifeCalories = lcv;
                 };
-
-                BoolViewController viewLast = settingsSubmenu.AddBool("Show Last Song Calories Burned");
-                viewLast.GetValue += delegate { return ModPrefs.GetBool("fitNessModd", "lgv", true, true); };
-                viewLast.SetValue += delegate (bool lgv) { ModPrefs.SetBool("fitNessModd", "lgv", lgv);
+                ////Last Song
+                BoolViewController viewLast = befitSettings.AddBool("Show Last Song Calories Burned");
+                viewLast.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "lgv", true, true); };
+                viewLast.SetValue += delegate (bool lgv) { ModPrefs.SetBool(Plugin.alias, "lgv", lgv);
                     MenuDisplay.visibleLastGameCalories = lgv; 
                 };
             }
@@ -127,7 +134,7 @@ namespace fitNessmod
         {
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
-            headmovement = null;
+            calCounter = null;
             display = null;
         }
 

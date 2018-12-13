@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 
-namespace fitNessmod
+namespace BeFitMod
 {
     class CalorieCounter : MonoBehaviour
     {

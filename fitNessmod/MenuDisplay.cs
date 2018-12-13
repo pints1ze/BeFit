@@ -2,37 +2,34 @@
 using System;
 using UnityEngine;
 using TMPro;
-using CustomUI.MenuButton;
-using CustomUI.Settings;
-using CustomUI.Utilities;
-using CustomUI.GameplaySettings;
 
-namespace fitNessmod
+namespace BeFitMod
 {
     class MenuDisplay : MonoBehaviour
     {
-        
         public static Vector3 menuPosition = new Vector3(0f, 0.3f, 1.25f);
         public static Quaternion slantBottom = Quaternion.Euler(35, 0, 0);
-        private int lifeCalories = ModPrefs.GetInt("fitNessMod", "lifeCalories", 0, true);
-        private int dailyCalories = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true);
-        private int currentSessionCals = ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true);
-        private string rdCals = ModPrefs.GetString("fitNessMod", "date", "dd.MM.yyyy", true);
-        private string version = ModPrefs.GetString("fitNessMod", "version", "-.-.-", false);
-        public static bool visibleLifeCalories = ModPrefs.GetBool("fitNessMod", "lcv", false, true);
-        public static bool visibleCurrentCalories = ModPrefs.GetBool("fitNessMod", "csv", true, true);
-        public static bool visibleDailyCalories = ModPrefs.GetBool("fitNessMod", "dcv", true, true);
-        public static bool visibleLastGameCalories = ModPrefs.GetBool("fitNessMod", "lgv", true, true);
+        private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
+        private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
+        private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
+        private string rdCals = ModPrefs.GetString(Plugin.alias, "date", "dd.MM.yyyy", true);
+        private string version = ModPrefs.GetString(Plugin.alias, "version", "-.-.-", false);
+        public static bool visibleLifeCalories = ModPrefs.GetBool(Plugin.alias, "lcv", false, true);
+        public static bool visibleCurrentCalories = ModPrefs.GetBool(Plugin.alias, "csv", true, true);
+        public static bool visibleDailyCalories = ModPrefs.GetBool(Plugin.alias, "dcv", true, true);
+        public static bool visibleLastGameCalories = ModPrefs.GetBool(Plugin.alias, "lgv", true, true);
         GameObject countCSC;
         GameObject countLC;
         GameObject countDC;
         public static TextMeshPro countLGC { get; set; } //Last Game
-        public static TextMeshPro cscText { get; set; }
-        public static TextMeshPro lcText { get; set; }
-        public static TextMeshPro dcText { get; set; }
-        public static TextMeshPro lgcText { get; set; }
-        public static TextMeshPro labelLG { get; set; }
-
+        public static TextMeshPro cscText { get; set; } //Current Session Calories count
+        public static TextMeshPro lcText { get; set; } //Life Calories count
+        public static TextMeshPro dcText { get; set; } //Daily calories count
+        public static TextMeshPro lgcText { get; set; } //Last Game Calories Count
+        public static TextMeshPro labelLG { get; set; } //Last Game Label
+        public static TextMeshPro labelcsc { get; set; } //Current Session Label
+        public static TextMeshPro labelLC { get; set; } //Life Calories label
+        public static TextMeshPro labelDC { get; set; } //Daily Calories Label
         void Awake()
         {
             Init();
@@ -46,22 +43,22 @@ namespace fitNessmod
                 ModPrefs.SetInt("fitNessMod", "dailyCalories", dailyCalories);
 
             }
-            if (visibleCurrentCalories) { 
             //Init Current Session Counter #
             /////////////////////////////////////////////////////////////////////////
+            cscText.enabled = visibleCurrentCalories;
             cscText = this.gameObject.AddComponent<TextMeshPro>();
-            cscText.text = ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true).ToString();
+            cscText.text = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true).ToString();
             cscText.fontSize = 2;
             cscText.color = Color.cyan;
             cscText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
             cscText.alignment = TextAlignmentOptions.Center;
             cscText.rectTransform.position = menuPosition + new Vector3(-1, -0.2f, 0);
             cscText.rectTransform.rotation = slantBottom;
-
             //Init Current Sesion Counter Label
             /////////////////////////////////////////////////////////////////////////
             countCSC = new GameObject("countCSClabel");
-            TextMeshPro labelcsc = countCSC.AddComponent<TextMeshPro>();
+            labelcsc = countCSC.AddComponent<TextMeshPro>();
+            labelcsc.enabled = visibleCurrentCalories;
             labelcsc.text = "Current Session Calories";
             labelcsc.fontSize = 1;
             labelcsc.color = Color.white;
@@ -69,38 +66,36 @@ namespace fitNessmod
             labelcsc.alignment = TextAlignmentOptions.Center;
             labelcsc.rectTransform.position = menuPosition + new Vector3(-1f, 0, 0);
             labelcsc.rectTransform.rotation = slantBottom;
-            }
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Life Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            if (visibleLifeCalories)
-            {
-                lcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
-                lcText.text = ModPrefs.GetInt("fitNessMod", "lifeCalories", 0, true).ToString();
-                lcText.fontSize = 2;
-                lcText.color = Color.cyan;
-                lcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-                lcText.alignment = TextAlignmentOptions.Center;
-                lcText.rectTransform.position = menuPosition + new Vector3(1, -0.2f, 0);
-                lcText.rectTransform.rotation = slantBottom;
-                //Init Life Calories Counter Label
-                /////////////////////////////////////////////////////////////////////////
-                countLC = new GameObject("countLClabel");
-                TextMeshPro labelLC = countLC.AddComponent<TextMeshPro>();
-                labelLC.text = "All Calories";
-                labelLC.fontSize = 1;
-                labelLC.color = Color.white;
-                labelLC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-                labelLC.alignment = TextAlignmentOptions.Center;
-                labelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
-                labelLC.rectTransform.rotation = slantBottom;
-            }
+            lcText.enabled = visibleLifeCalories;
+            lcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
+            lcText.text = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true).ToString();
+            lcText.fontSize = 2;
+            lcText.color = Color.cyan;
+            lcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            lcText.alignment = TextAlignmentOptions.Center;
+            lcText.rectTransform.position = menuPosition + new Vector3(1, -0.2f, 0);
+            lcText.rectTransform.rotation = slantBottom;
+            //Init Life Calories Counter Label
+            /////////////////////////////////////////////////////////////////////////
+            countLC = new GameObject("countLClabel");
+            labelLC = countLC.AddComponent<TextMeshPro>();
+            labelLC.text = "All Calories";
+            labelLC.fontSize = 1;
+            labelLC.color = Color.white;
+            labelLC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            labelLC.alignment = TextAlignmentOptions.Center;
+            labelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
+            labelLC.rectTransform.rotation = slantBottom;
+            labelLC.enabled = visibleLifeCalories;
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Daily Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            if (visibleDailyCalories) { 
+            dcText.enabled = visibleDailyCalories;
             dcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
             dcText.text = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true).ToString();
             dcText.fontSize = 2;
@@ -112,7 +107,7 @@ namespace fitNessmod
             //Init Daily Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
             countDC = new GameObject("countDClabel");
-            TextMeshPro labelDC = countDC.AddComponent<TextMeshPro>();
+            labelDC = countDC.AddComponent<TextMeshPro>();
             labelDC.text = "Daily Calories";
             labelDC.fontSize = 1;
             labelDC.color = Color.white;
@@ -120,51 +115,49 @@ namespace fitNessmod
             labelDC.alignment = TextAlignmentOptions.Center;
             labelDC.rectTransform.position = menuPosition + new Vector3(0, 0, 0);
             labelDC.rectTransform.rotation = slantBottom;
-                /////////////////////////////////////////////////////////////////////////
-            }
-
-
-            if (visibleLastGameCalories)
-            {
-                //Init Last Game Calories Counter #
-                /////////////////////////////////////////////////////////////////////////
-                lgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
-                lgcText.text = "";
-                lgcText.fontSize = 2;
-                lgcText.color = Color.cyan;
-                lgcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-                lgcText.alignment = TextAlignmentOptions.Center;
-                lgcText.rectTransform.position = menuPosition + new Vector3(2.5f, -0.6f, 0f);
-                lgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-
-                //Init Last Game Song name Label // Displays version number on launch
-                /////////////////////////////////////////////////////////////////////////
-                countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
-                countLGC.text = version;
-                countLGC.fontSize = 1.5f;
-                countLGC.color = Color.white;
-                countLGC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-                countLGC.alignment = TextAlignmentOptions.Center;
-                countLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
-                countLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-                /////////////////////////////////////////////////////////////////////////
-                //Init Last Game Calories Counter Label
-                /////////////////////////////////////////////////////////////////////////
-                labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
-                labelLG.text = "BeFit Mod"; //I'm not set on the name
-                labelLG.fontSize = 2f;
-                labelLG.color = Color.white;
-                labelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-                labelLG.alignment = TextAlignmentOptions.Center;
-                labelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
-                labelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-                /////////////////////////////////////////////////////////////////////////
-            }
+            labelDC.enabled = visibleDailyCalories;
+            /////////////////////////////////////////////////////////////////////////
+            //Init Last Game Calories Counter #
+            /////////////////////////////////////////////////////////////////////////
+            lgcText.enabled = visibleLastGameCalories;
+            lgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
+            lgcText.text = "";
+            lgcText.fontSize = 2;
+            lgcText.color = Color.cyan;
+            lgcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            lgcText.alignment = TextAlignmentOptions.Center;
+            lgcText.rectTransform.position = menuPosition + new Vector3(2.5f, -0.6f, 0f);
+            lgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            //Init Last Game Song name Label // Displays version number on launch
+            /////////////////////////////////////////////////////////////////////////
+            countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            countLGC.text = version;
+            countLGC.fontSize = 1.5f;
+            countLGC.color = Color.white;
+            countLGC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            countLGC.alignment = TextAlignmentOptions.Center;
+            countLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
+            countLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            countLGC.enabled = visibleLastGameCalories;
+            /////////////////////////////////////////////////////////////////////////
+            //Init Last Game Calories Counter Label
+            /////////////////////////////////////////////////////////////////////////
+            labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            labelLG.text = "BeFit Mod"; //I'm not set on the name
+            labelLG.fontSize = 2f;
+            labelLG.color = Color.white;
+            labelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            labelLG.alignment = TextAlignmentOptions.Center;
+            labelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
+            labelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            labelLG.enabled = visibleLastGameCalories;
+            /////////////////////////////////////////////////////////////////////////
+            
         }
 
         void OnDestroy()
         {
-            Console.WriteLine("[fitNessMod | LOG] Destroying menuDisplay...");
+            Console.WriteLine(Plugin.alias + " LOG| Destroying menuDisplay...");
         }
 
     }

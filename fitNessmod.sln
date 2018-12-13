@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fitNessmod", "fitNessmod\fitNessmod.csproj", "{DB4A3F16-F067-4B4D-B5E8-4E7CEBE6D7D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeFitMod", "fitNessmod\BeFitMod.csproj", "{DB4A3F16-F067-4B4D-B5E8-4E7CEBE6D7D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4AD3A6E8-26CE-4CAD-ADA3-843F1DD669A6}
 	EndGlobalSection
 EndGlobal

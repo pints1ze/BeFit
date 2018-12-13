@@ -8,36 +8,29 @@ using IllusionPlugin;
 using TMPro;
 
 /// <summary>
-///  New Calorie Counting algorith that uses physical movements relative to weight and preset values.
-///  Will be much mroe accurate than previous counting method.
-///  
-///  Needs Fixed:
-///     - Left Hand Calorie COunts way to High
-///     - Right Hand Calorie Counts way to High
-///         - Find METS values for m/s may prove to be difficult for hand motions. 
-///         - Tennis may be a viable comparison.
+///  New Calorie Counting algorithm that uses physical movements relative to weight and preset values.
+///  Will be much more accurate than previous counting method.
 /// </summary>
 
-namespace fitNessmod
+namespace BeFitMod
 {
-    class hmdDebugging : MonoBehaviour
+    class igcv02x : MonoBehaviour
     {
         private StandardLevelSceneSetupDataSO lvlData;
-
-        private int lifeCalories = ModPrefs.GetInt("fitNessMod", "lifeCalories", 0, true);
-        private int dailyCalories = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true);
-        private int currentSessionCals = ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true);
+        private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
+        private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
+        private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
         float roughFPS = 90f;
         float waitForSecondsTime = 0.25f;
-        float playerWeight = ModPrefs.GetInt("fitNessMod", "weightLBS", 145, true);
+        float playerWeight = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
         float weightKg;
         float totalCaloriesBurnt = 0;
-        float[] headvelocityCoefficient = new float[5]{ 0.5f, 1.4f, 2, 2.4f, 3 };
-        float[] METSVALShead = new float [5] { 8, 15f, 18, 20f, 22};
-/// ////////////////////////////////////////////////
+        float[] headvelocityCoefficient = new float[5]{ 1f, 1.4f, 2, 3f, 4 };
+        float[] METSVALShead = new float [5] { 5, 13, 15, 19, 22};
+        ////////////////////////////////////////////
         float[] handvelocityCoefficient = new float[5] { 1.25f, 2.25f, 3.8f, 5f, 7.5f };
         float[] METSVALShands = new float[5] { 5f, 6.75f, 8f, 9.5f, 11f };
-        /// /////////
+
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
         Vector3 RHCvelocity;
@@ -47,7 +40,7 @@ namespace fitNessmod
         void Awake()
         {
             lvlData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
-            Console.WriteLine("[fitNessMod | LOG] DEBUGGER!");
+            Console.WriteLine(Plugin.alias + " LOG| DEBUGGER!");
             weightKg = playerWeight * 0.4535924f; // Convert LBS to KG
             Plugin.safetyEnabled = false; //Debugging mode
 
@@ -81,12 +74,11 @@ namespace fitNessmod
             MenuDisplay.cscText.text = (currentSessionCals + calories).ToString();
             MenuDisplay.lcText.text = (lifeCalories + calories).ToString();
             MenuDisplay.dcText.text = (dailyCalories + calories).ToString();
-            ModPrefs.SetInt("fitNessMod", "lifeCalories", lifeCalories + calories);
-            ModPrefs.SetInt("fitNessMod", "dailyCalories", dailyCalories + calories);
-            ModPrefs.SetInt("fitNessMod", "sessionCalories", currentSessionCals + calories);
-            Console.WriteLine("[fitNessMod | LOG] Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
+            ModPrefs.SetInt(Plugin.alias, "lifeCalories", lifeCalories + calories);
+            ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories + calories);
+            ModPrefs.SetInt(Plugin.alias, "sessionCalories", currentSessionCals + calories);
+            Console.WriteLine(Plugin.alias + " LOG| Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
         }
-
         void Update()
         {
             InputTracking.GetNodeStates(nodeStates);
@@ -94,7 +86,6 @@ namespace fitNessmod
                 StartCoroutine("AverageVelocity");
             }
         }
-
         private void calCalc(float METS)
         {
             //=((($C2*3.5*$I$1)/200)/60)/90
@@ -105,7 +96,6 @@ namespace fitNessmod
             LiveCountText.text = displayText.ToString();
             //Console.WriteLine("[fitNessMod | LOG] Total Calories burned: " + totalCaloriesBurnt);
         }
-
         bool isRunning = false;
         IEnumerator AverageVelocity()
         {
