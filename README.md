@@ -60,7 +60,7 @@ Take a look at the source code. It is fairly simple, and it won't take long to u
 
 ### How do the calories get calculated?
 METS values. [VR Health Institute](https://vrhealth.institute/portfolio/beat-saber/) found beat saber to have a physical activity equivalent of playing tennis (6 - 8 METS).
-<a href="url"><img src="https://vrhealth.institute/wp-content/uploads/2017/08/Tennis-Pre-300-dpi.png" align="left" width="78" ></a>
+<a href="https://vrhealth.institute/methodology/"><img src="https://vrhealth.institute/wp-content/uploads/2017/08/Tennis-Pre-300-dpi.png" align="left" width="78" ></a>
 The METS value combined with the users weight can give close representation of the calories being burned. In order to improve accuracy, I have been [looking into using age, height, and sex](https://sites.google.com/site/compendiumofphysicalactivities/corrected-mets) in order to find more accurate calories per user. 
 
 Currently, calories are calculated using:
