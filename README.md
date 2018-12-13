@@ -65,7 +65,7 @@ The METS value combined with the users weight can give close representation of t
 
 Currently, calories are calculated using:
 ~~~
-((METS * 3.5 * userWEight)/200) * 0.1
+(((METS * 3.5 * userWEight)/200)/60) * 0.1
 ~~~
 METS values are currently determined by the velocity at 5 different intensities. I'm hoping to find a ratio to replace this.
 
