@@ -36,6 +36,9 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\Beat Saber_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="BeatSaberCustomUI">
+      <HintPath>..\..\..\..\..\..\GAMES\Oculus\Software\hyperbolic-magnetism-beat-saber\Plugins\BeatSaberCustomUI.dll</HintPath>
+    </Reference>
     <Reference Include="IllusionPlugin">
       <HintPath>..\..\..\..\Beat Saber_Data\Managed\IllusionPlugin.dll</HintPath>
     </Reference>
@@ -69,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalorieCounter.cs" />
+    <Compile Include="hmdDebugging.cs" />
     <Compile Include="MenuDisplay.cs" />
     <Compile Include="MissedCounter.cs" />
     <Compile Include="Plugin.cs" />

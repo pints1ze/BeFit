@@ -114,6 +114,6 @@ G:\GAMES\Oculus\Software\hyperbolic-magnetism-beat-saber\modDevelopment\fitnessM
 G:\GAMES\Oculus\Software\hyperbolic-magnetism-beat-saber\modDevelopment\fitnessMOD\fitNessmod\fitNessmod\obj\Debug\fitNessMod.pdb
 G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\fitNessMod.dll
 G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\fitNessMod.pdb
-G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\obj\Debug\fitNessmod.csprojResolveAssemblyReference.cache
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\BeatSaberCustomUI.dll
 G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\obj\Debug\fitNessMod.dll
 G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\obj\Debug\fitNessMod.pdb
