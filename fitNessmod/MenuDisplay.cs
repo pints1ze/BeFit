@@ -45,8 +45,9 @@ namespace BeFitMod
             }
             //Init Current Session Counter #
             /////////////////////////////////////////////////////////////////////////
-            cscText.enabled = visibleCurrentCalories;
+            //cscText.enabled = visibleCurrentCalories;
             cscText = this.gameObject.AddComponent<TextMeshPro>();
+            cscText.renderer.enabled = visibleCurrentCalories;
             cscText.text = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true).ToString();
             cscText.fontSize = 2;
             cscText.color = Color.cyan;
@@ -58,7 +59,7 @@ namespace BeFitMod
             /////////////////////////////////////////////////////////////////////////
             countCSC = new GameObject("countCSClabel");
             labelcsc = countCSC.AddComponent<TextMeshPro>();
-            labelcsc.enabled = visibleCurrentCalories;
+            labelcsc.renderer.enabled = visibleCurrentCalories;
             labelcsc.text = "Current Session Calories";
             labelcsc.fontSize = 1;
             labelcsc.color = Color.white;
@@ -70,8 +71,9 @@ namespace BeFitMod
             /////////////////////////////////////////////////////////////////////////
             //Init Life Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            lcText.enabled = visibleLifeCalories;
+            
             lcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
+            lcText.renderer.enabled = visibleLifeCalories;
             lcText.text = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true).ToString();
             lcText.fontSize = 2;
             lcText.color = Color.cyan;
@@ -81,8 +83,10 @@ namespace BeFitMod
             lcText.rectTransform.rotation = slantBottom;
             //Init Life Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
+            
             countLC = new GameObject("countLClabel");
             labelLC = countLC.AddComponent<TextMeshPro>();
+            labelLC.renderer.enabled = visibleLifeCalories;
             labelLC.text = "All Calories";
             labelLC.fontSize = 1;
             labelLC.color = Color.white;
@@ -90,13 +94,14 @@ namespace BeFitMod
             labelLC.alignment = TextAlignmentOptions.Center;
             labelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
             labelLC.rectTransform.rotation = slantBottom;
-            labelLC.enabled = visibleLifeCalories;
+            
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Daily Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            dcText.enabled = visibleDailyCalories;
+            
             dcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
+            dcText.renderer.enabled = visibleDailyCalories;
             dcText.text = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true).ToString();
             dcText.fontSize = 2;
             dcText.color = Color.cyan;
@@ -106,8 +111,10 @@ namespace BeFitMod
             dcText.rectTransform.rotation = slantBottom;
             //Init Daily Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
+            
             countDC = new GameObject("countDClabel");
             labelDC = countDC.AddComponent<TextMeshPro>();
+            labelDC.renderer.enabled = visibleDailyCalories;
             labelDC.text = "Daily Calories";
             labelDC.fontSize = 1;
             labelDC.color = Color.white;
@@ -115,12 +122,13 @@ namespace BeFitMod
             labelDC.alignment = TextAlignmentOptions.Center;
             labelDC.rectTransform.position = menuPosition + new Vector3(0, 0, 0);
             labelDC.rectTransform.rotation = slantBottom;
-            labelDC.enabled = visibleDailyCalories;
+            
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            lgcText.enabled = visibleLastGameCalories;
+            
             lgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
+            lgcText.renderer.enabled = visibleLastGameCalories;
             lgcText.text = "";
             lgcText.fontSize = 2;
             lgcText.color = Color.cyan;
@@ -130,7 +138,9 @@ namespace BeFitMod
             lgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
             //Init Last Game Song name Label // Displays version number on launch
             /////////////////////////////////////////////////////////////////////////
+            
             countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            countLGC.renderer.enabled = visibleLastGameCalories;
             countLGC.text = version;
             countLGC.fontSize = 1.5f;
             countLGC.color = Color.white;
@@ -138,11 +148,13 @@ namespace BeFitMod
             countLGC.alignment = TextAlignmentOptions.Center;
             countLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
             countLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-            countLGC.enabled = visibleLastGameCalories;
+
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
+            
             labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            labelLG.renderer.enabled = visibleLastGameCalories;
             labelLG.text = "BeFit Mod"; //I'm not set on the name
             labelLG.fontSize = 2f;
             labelLG.color = Color.white;
@@ -150,7 +162,7 @@ namespace BeFitMod
             labelLG.alignment = TextAlignmentOptions.Center;
             labelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
             labelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-            labelLG.enabled = visibleLastGameCalories;
+            
             /////////////////////////////////////////////////////////////////////////
             
         }

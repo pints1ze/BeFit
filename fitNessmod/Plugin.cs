@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using CustomUI.Settings;
-
+using TMPro;
 namespace BeFitMod
 {
     public class Plugin : IPlugin
@@ -71,28 +71,16 @@ namespace BeFitMod
             if (arg0.name == "Menu" && !safetyEnabled)
             {
                 SubMenu befitSettings = SettingsUI.CreateSubMenu("BeFit Menu"); //////// Submenu Created //////////
-                SubMenu befitStats = SettingsUI.CreateSubMenu("Fitness Statistics"); //////// Statistics Page Created ////////
-
-                IntViewController cbAllTime = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
-                cbAllTime.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true); };
-                
-                IntViewController cbCurSession = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
-                cbCurSession.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true); };
-                IntViewController cbDate = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
-                cbDate.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true); };
-
-
-
                 bool lbsorkgs = ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true);
                 if (lbsorkgs)
                 {
                     IntViewController weightKGS = befitSettings.AddInt("Weight in Kilo Grams", 36, 363, 1);
-                    weightKGS.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "weightLBS", (int) (60 * 2.2046f), true);
+                    weightKGS.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "weightLBS", (int) (60 * 0.4535924), true);
                     };
                     weightKGS.SetValue += delegate (int kgs) { ModPrefs.SetInt(Plugin.alias, "weightLBS", (int) (kgs * 2.2046f)); };
 
-                    IntViewController allTimeLBSburned = befitStats.AddInt("Kilo Grams burned ", 0, Int32.MaxValue, 0);
-                    allTimeLBSburned.GetValue += delegate { return (int)(((ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true)) * 2.204623f) /7700); };
+
+                    
                 }
                 else
                 {
@@ -100,29 +88,28 @@ namespace BeFitMod
                     weightLBS.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true); };
                     weightLBS.SetValue += delegate (int lbs) { ModPrefs.SetInt(Plugin.alias, "weightLBS", lbs); };
 
-                    IntViewController allTimeLBSburned = befitStats.AddInt("Calories Burned All Time", 0, Int32.MaxValue, 0);
-                    allTimeLBSburned.GetValue += delegate { return (ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true)) / 3500; };
+
                 }
                 ////Daily
-                BoolViewController viewDaily = befitSettings.AddBool("Show Daily Calories Burned");
+                BoolViewController viewDaily = befitSettings.AddBool("Show Daily Calories");
                 viewDaily.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "dcv", true, true); };
                 viewDaily.SetValue += delegate (bool dcv) { ModPrefs.SetBool(Plugin.alias, "dcv", dcv);
                     MenuDisplay.visibleDailyCalories = dcv;
                 };
                 ////Current
-                BoolViewController viewCurrent = befitSettings.AddBool("Show Current Session Calories Burned");
+                BoolViewController viewCurrent = befitSettings.AddBool("Show Current Session Calories");
                 viewCurrent.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "csv", true, true); };
                 viewCurrent.SetValue += delegate (bool csv) { ModPrefs.SetBool(Plugin.alias, "csv", csv);
                     MenuDisplay.visibleCurrentCalories = csv;
                 };
                 ////All
-                BoolViewController viewLife = befitSettings.AddBool("Show All Calories Burned");
+                BoolViewController viewLife = befitSettings.AddBool("Show All Calories");
                 viewLife.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "lcv", false, true); };
                 viewLife.SetValue += delegate (bool lcv) { ModPrefs.SetBool(Plugin.alias, "lcv", lcv);
                     MenuDisplay.visibleLifeCalories = lcv;
                 };
                 ////Last Song
-                BoolViewController viewLast = befitSettings.AddBool("Show Last Song Calories Burned");
+                BoolViewController viewLast = befitSettings.AddBool("Show Last Song Calories");
                 viewLast.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "lgv", true, true); };
                 viewLast.SetValue += delegate (bool lgv) { ModPrefs.SetBool(Plugin.alias, "lgv", lgv);
                     MenuDisplay.visibleLastGameCalories = lgv; 

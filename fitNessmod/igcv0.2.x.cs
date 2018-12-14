@@ -20,16 +20,17 @@ namespace BeFitMod
         private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
         private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
         private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
-        float roughFPS = 90f;
-        float waitForSecondsTime = 0.25f;
         float playerWeight = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
         float weightKg;
+        float timeAccuracy = 0.1f; //1 = 1:1
+        float timeBFU = 0.3f; // Squaroot as x^3 calculations is average //find way to calculate 
+        float hoursInFixedUpdate;
         float totalCaloriesBurnt = 0;
-        float[] headvelocityCoefficient = new float[5]{ 1f, 1.4f, 2, 3f, 4 };
-        float[] METSVALShead = new float [5] { 5, 13, 15, 19, 22};
+        float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 };
+        float[] METSVALShead = new float[5] { 6, 12, 15, 18, 20 };
         ////////////////////////////////////////////
-        float[] handvelocityCoefficient = new float[5] { 1.25f, 2.25f, 3.8f, 5f, 7.5f };
-        float[] METSVALShands = new float[5] { 5f, 6.75f, 8f, 9.5f, 11f };
+        float[] handvelocityCoefficient = new float[5] { 1.2f, 2.75f, 3.75f, 4.75f, 6f };
+        float[] METSVALShands = new float[5] { 3.25f, 4.75f, 6.5f, 8f, 9f };
 
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
@@ -39,6 +40,7 @@ namespace BeFitMod
         List<XRNodeState> nodeStates = new List<XRNodeState>();
         void Awake()
         {
+            hoursInFixedUpdate = (timeBFU / 3600);
             lvlData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
             Console.WriteLine(Plugin.alias + " LOG| DEBUGGER!");
             weightKg = playerWeight * 0.4535924f; // Convert LBS to KG
@@ -63,7 +65,7 @@ namespace BeFitMod
         }
         private void OnDestroy()
         {
-            int calories = (int) totalCaloriesBurnt;
+            int calories = (int)totalCaloriesBurnt;
             headvelocityCoefficient = null;
             METSVALShead = null;
             handvelocityCoefficient = null;
@@ -79,278 +81,314 @@ namespace BeFitMod
             ModPrefs.SetInt(Plugin.alias, "sessionCalories", currentSessionCals + calories);
             Console.WriteLine(Plugin.alias + " LOG| Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
         }
-        void Update()
+        void FixedUpdate()
         {
             InputTracking.GetNodeStates(nodeStates);
-            if (!isRunning) {
-                StartCoroutine("AverageVelocity");
+            if (!IsRunning)
+            {
+                StartCoroutine("CalorieCounter");
             }
         }
         private void calCalc(float METS)
         {
-            //=((($C2*3.5*$I$1)/200)/60)/90
-            
-            float calBurnedLastSecond = (float)(((METS * 3.5 * weightKg) / 200) / 60)*0.1f; //Calorie burned per second
-            totalCaloriesBurnt += (float) calBurnedLastSecond;
-            int displayText = (int) totalCaloriesBurnt;
+            float calBurnedLastTenthofSecond = (float)(METS * 3.5 * weightKg * hoursInFixedUpdate); //Calorie burned per second
+            totalCaloriesBurnt += (float)calBurnedLastTenthofSecond;
+            int displayText = (int)totalCaloriesBurnt;
             LiveCountText.text = displayText.ToString();
-            //Console.WriteLine("[fitNessMod | LOG] Total Calories burned: " + totalCaloriesBurnt);
         }
-        bool isRunning = false;
-        IEnumerator AverageVelocity()
+        bool IsRunning = false;
+        float[] aveAll;
+
+
+        IEnumerator CalorieCounter()
         {
             YieldInstruction waitForFixedUpdate = new WaitForFixedUpdate();
             while (true)
             {
-                isRunning = true;
+                IsRunning = true;
+                aveAll = new float[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                //Console.WriteLine("Aveall initialized");
                 foreach (XRNodeState ns in nodeStates)
                 {
-                    ///////////////////////////////////////////////////////////////////////            Left Hand          ///////////////////////////////////////////            Left Hand
-                    if (ns.nodeType == XRNode.LeftHand)
-                    {
-
-                        ns.TryGetVelocity(out LHCvelocity);
-                        if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-                        if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-                        if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-
-                    }
-                    /////////////////////////////////////////////////////////////////////           Right Hand        ///////////////////////////////////////////            Right Hand
-                    if (ns.nodeType == XRNode.RightHand)
-                    {
-                        ns.TryGetVelocity(out RHCvelocity);
-                        if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-                        if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-                        if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[0])
-                        {
-                            if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[1])
-                            {
-                                calCalc(METSVALShands[0]); //Equivalent to 2 to 3 mph for one hour
-                            }
-                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[2])
-                            {
-                                calCalc(METSVALShands[1]);
-                            }
-                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[3])
-                            {
-                                calCalc(METSVALShands[2]);
-                            }
-                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[3]);
-                            }
-                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[4])
-                            {
-                                calCalc(METSVALShands[4]);
-                            }
-
-                        }
-                    }
                     ///////////////////////////////////////////////////////////////////            Head           ///////////////////////////////////////////            Head
                     if (ns.nodeType == XRNode.Head)
                     {
+
+                        //Console.WriteLine("Head");
                         ns.TryGetVelocity(out HMDvelocity);
                         if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[0])
                         {
                             if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[1])
                             {
-                                calCalc(METSVALShead[0]); //Equivalent to 2 to 3 mph for one hour
+                                aveAll[0] = METSVALShead[0]; //Equivalent to 2 to 3 mph for one hour
                             }
                             else if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[2])
                             {
-                                calCalc(METSVALShead[1]);
+                                aveAll[0] = METSVALShead[1];
                             }
                             else if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[2] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[3])
                             {
-                                calCalc(METSVALShead[2]);
+                                aveAll[0] = METSVALShead[2];
                             }
                             else if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[3] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[4])
                             {
-                                calCalc(METSVALShead[3]);
+                                aveAll[0] = METSVALShead[3];
                             }
                             else if (Math.Abs(HMDvelocity.x) >= 3)
                             {
-                                calCalc(METSVALShead[4]);
+                                aveAll[0] = METSVALShead[4];
                             }
+
 
                         }
                         if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[0])
                         {
                             if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[1])
                             {
-                                calCalc(METSVALShead[0] + 0.5f); //Equivalent to 2 to 3 mph for one hour
+                                aveAll[1] = METSVALShead[0]; ; //Equivalent to 2 to 3 mph for one hour
                             }
                             else if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[2])
                             {
-                                calCalc(METSVALShead[1] + 1f);
+                                aveAll[1] = METSVALShead[1];
                             }
                             else if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[2] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[3])
                             {
-                                calCalc(METSVALShead[2] + 1.5f);
+                                aveAll[1] = METSVALShead[2];
                             }
                             else if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[3] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[4])
                             {
-                                calCalc(METSVALShead[3] + 2f);
+                                aveAll[1] = METSVALShead[3];
                             }
                             else if (Math.Abs(HMDvelocity.y) >= 3)
                             {
-                                calCalc(METSVALShead[4] + 3f);
+                                aveAll[1] = METSVALShead[4];
                             }
+
 
                         }
                         if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[0])
                         {
                             if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[1])
                             {
-                                calCalc(METSVALShead[0]); //Equivalent to 2 to 3 mph for one hour
+                                aveAll[2] = METSVALShead[0]; //Equivalent to 2 to 3 mph for one hour
                             }
                             else if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[2])
                             {
-                                calCalc(METSVALShead[1]);
+                                aveAll[2] = METSVALShead[1];
                             }
                             else if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[2] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[3])
                             {
-                                calCalc(METSVALShead[2]);
+                                aveAll[2] = METSVALShead[2];
                             }
                             else if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[3] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[4])
                             {
-                                calCalc(METSVALShead[3]);
+                                aveAll[2] = METSVALShead[3];
                             }
                             else if (Math.Abs(HMDvelocity.z) >= 3)
                             {
-                                calCalc(METSVALShead[4]);
+                                aveAll[2] = METSVALShead[4];
+                            }
+                        }
+                        //Console.WriteLine("Head Complete");
+                    }
+                    
+                    ///////////////////////////////////////////////////////////////////////            Left Hand          ///////////////////////////////////////////            Left Hand
+                    if (ns.nodeType == XRNode.LeftHand)
+                    {
+                        //Console.WriteLine("LeftHand");
+                        ns.TryGetVelocity(out LHCvelocity);
+                        if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[1])
+                            {
+                                aveAll[3] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[2])
+                            {
+                                aveAll[3] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[3])
+                            {
+                                aveAll[3] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.x) < handvelocityCoefficient[4])
+                            {
+                                aveAll[3] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[3] = METSVALShands[4];
                             }
 
+
                         }
+                        if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[1])
+                            {
+                                aveAll[4] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[2])
+                            {
+                                aveAll[4] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[3])
+                            {
+                                aveAll[4] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.y) < handvelocityCoefficient[4])
+                            {
+                                aveAll[4] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[4] = METSVALShands[4];
+                            }
+
+
+                        }
+                        if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[0] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[1])
+                            {
+                                aveAll[5] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(LHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[2])
+                            {
+                                aveAll[5] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[2] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[3])
+                            {
+                                aveAll[5] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[3] && Math.Abs(LHCvelocity.z) < handvelocityCoefficient[4])
+                            {
+                                aveAll[5] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[5] = METSVALShands[4];
+                            }
+
+
+                        }
+                        //Console.WriteLine("Left Hand Complete");
+                    }
+                    
+                    /////////////////////////////////////////////////////////////////////           Right Hand        ///////////////////////////////////////////            Right Hand
+                    if (ns.nodeType == XRNode.RightHand)
+                    {
+                        //Console.WriteLine("RightHand");
+                        ns.TryGetVelocity(out RHCvelocity);
+                        if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[1])
+                            {
+                                aveAll[6] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[2])
+                            {
+                                aveAll[6] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[3])
+                            {
+                                aveAll[6] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.x) < handvelocityCoefficient[4])
+                            {
+                                aveAll[6] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[6] = METSVALShands[4];
+                            }
+
+
+                        }
+                        if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[1])
+                            {
+                                aveAll[7] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[2])
+                            {
+                                aveAll[7] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[3])
+                            {
+                                aveAll[7] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.y) < handvelocityCoefficient[4])
+                            {
+                                aveAll[7] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(RHCvelocity.y) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[7] = METSVALShands[4];
+                            }
+
+
+                        }
+                        if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[0])
+                        {
+                            if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[0] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[1])
+                            {
+                                aveAll[8] = METSVALShands[0]; //Equivalent to 2 to 3 mph for one hour
+                            }
+                            else if (Math.Abs(RHCvelocity.x) >= handvelocityCoefficient[1] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[2])
+                            {
+                                aveAll[8] = METSVALShands[1];
+                            }
+                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[2] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[3])
+                            {
+                                aveAll[8] = METSVALShands[2];
+                            }
+                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[3] && Math.Abs(RHCvelocity.z) < handvelocityCoefficient[4])
+                            {
+                                aveAll[8] = METSVALShands[3];
+                            }
+                            else if (Math.Abs(RHCvelocity.z) >= handvelocityCoefficient[4])
+                            {
+                                aveAll[8] = METSVALShands[4];
+                            }
+                        }
+
+                        //Console.WriteLine("Right Hand Complete");
+                    }
+                    
+
+                }
+                //Console.WriteLine("Analyzing");
+                int count = 0;
+                for (int i = 0; i < 9; i++)
+                {
+                    if (aveAll[i] > 1)
+                    {
+                        //Console.WriteLine(aveAll[i]);
+                        count++;
+                        aveAll[9] = aveAll[9] + aveAll[i];
                     }
                 }
-                for (float duration = 0.1f; duration > 0; duration -= Time.fixedDeltaTime)
+                if (aveAll[9] > 1 && aveAll[9] < 100)
+                {
+                    float counted = aveAll[9] / count;
+                    Console.WriteLine(counted); //averages
+                    calCalc((aveAll[9] / count));
+                }
+                
+                
+                for (float duration = 30f; duration > 0; duration--)
                 {
                     yield return new WaitForFixedUpdate();
                 }
-                isRunning = false;
-                
+                //Console.WriteLine("End!");
+
+                IsRunning = false;
             }
         }
-
-
-
-
-
     }
 }
+
+
+

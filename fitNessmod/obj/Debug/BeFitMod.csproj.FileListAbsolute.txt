@@ -1,0 +1,5 @@
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\fitNessMod.dll
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\fitNessMod.pdb
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\bin\Debug\BeatSaberCustomUI.dll
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\obj\Debug\fitNessMod.dll
+G:\Google Drive\Game\Beat Saber\My Mods\BeFit\fitNessmod\obj\Debug\fitNessMod.pdb
