@@ -22,38 +22,43 @@ namespace BeFitMod
         private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
         float playerWeight = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
         float weightKg;
-        float timeAccuracy = 0.1f; //1 = 1:1
-        float timeBFU = 0.3f; // Squaroot as x^3 calculations is average //find way to calculate 
+        ////////////////////////////////////////////////////////////////////////////////////////
+        float timeBFU = (1/90f); // 1 frame per 90, fixed update
+        float timeAccuracy = ModPrefs.GetInt(Plugin.alias, "caccVal", 30, true);
+        float timeBRU; 
         float hoursInFixedUpdate;
+        ////////////////////////////////////////////////////////////////////////////////////////
         float totalCaloriesBurnt = 0;
-        float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 };
-        float[] METSVALShead = new float[5] { 6, 12, 15, 18, 20 };
-        ////////////////////////////////////////////
-        float[] handvelocityCoefficient = new float[5] { 1.2f, 2.75f, 3.75f, 4.75f, 6f };
-        float[] METSVALShands = new float[5] { 3.25f, 4.75f, 6.5f, 8f, 9f };
-
+        float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 }; /// Find more accurate values
+        float[] METSVALShead = new float[5] { 9, 12, 15, 17, 19 }; //Average of 14.4
+        ////////////////////////////////////////////////////////////////////////////////////////
+        float[] handvelocityCoefficient = new float[5] { 1.2f, 2.65f, 3.75f, 4.75f, 6f };
+        float[] METSVALShands = new float[5] { 3.5f, 5f, 6.75f, 8f, 9f }; //Average of 6.45
+        ////////////////////////////////////////////////////////////////////////////////////////
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
         Vector3 RHCvelocity;
         GameObject LiveCount;
         public static TextMeshPro LiveCountText;
         List<XRNodeState> nodeStates = new List<XRNodeState>();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         void Awake()
         {
-            hoursInFixedUpdate = (timeBFU / 3600);
+            timeBRU = (timeAccuracy * timeBFU);
+            hoursInFixedUpdate = (timeBRU / 3600);
             lvlData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
-            Console.WriteLine(Plugin.alias + " LOG| DEBUGGER!");
+            Console.WriteLine(Plugin.modLog + " Calorie Counter Awoken for " + lvlData.difficultyBeatmap.level.songName);
             weightKg = playerWeight * 0.4535924f; // Convert LBS to KG
             Plugin.safetyEnabled = false; //Debugging mode
-
+            ////////////////////////////////////////////////////////////////////////////////////////
             LiveCountText = this.gameObject.AddComponent<TextMeshPro>();
             LiveCountText.text = "0";
             LiveCountText.fontSize = 4;
-            LiveCountText.color = Color.cyan;
+            LiveCountText.color = Color.white;
             LiveCountText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
             LiveCountText.alignment = TextAlignmentOptions.Center;
             LiveCountText.rectTransform.position = Plugin.counterPosition + new Vector3(0, -0.4f, 0);
-
+            ////////////////////////////////////////////////////////////////////////////////////////
             LiveCount = new GameObject("Label");
             TextMeshPro label = LiveCount.AddComponent<TextMeshPro>();
             label.text = "Calories";
@@ -63,6 +68,7 @@ namespace BeFitMod
             label.alignment = TextAlignmentOptions.Center;
             label.rectTransform.position = Plugin.counterPosition;
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void OnDestroy()
         {
             int calories = (int)totalCaloriesBurnt;
@@ -79,8 +85,9 @@ namespace BeFitMod
             ModPrefs.SetInt(Plugin.alias, "lifeCalories", lifeCalories + calories);
             ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories + calories);
             ModPrefs.SetInt(Plugin.alias, "sessionCalories", currentSessionCals + calories);
-            Console.WriteLine(Plugin.alias + " LOG| Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
+            Console.WriteLine(Plugin.modLog + "Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
         }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         void FixedUpdate()
         {
             InputTracking.GetNodeStates(nodeStates);
@@ -88,18 +95,47 @@ namespace BeFitMod
             {
                 StartCoroutine("CalorieCounter");
             }
+            else if (!colChange)
+            {
+                StartCoroutine("colorChange");
+            }
         }
+        bool colChange = false;
+        IEnumerator colorChange()
+        {
+            colChange = true;
+            if (totalCaloriesBurnt >= 8 && totalCaloriesBurnt <= 14)
+            {
+                LiveCountText.color = Color.cyan;
+            }
+            else if(totalCaloriesBurnt >= 15 && totalCaloriesBurnt <= 24)
+            {
+                LiveCountText.color = Color.magenta;
+            }
+            else if(totalCaloriesBurnt >= 25 && totalCaloriesBurnt <= 34)
+            {
+                LiveCountText.color = Color.red;
+            }
+            else if(totalCaloriesBurnt >= 35 && totalCaloriesBurnt <= 45)
+            {
+                LiveCountText.outlineColor = Color.yellow;
+                LiveCountText.outlineWidth = 0.1f;
+            }
+            
+            yield return new WaitForSeconds(10);
+            colChange = false;
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
         private void calCalc(float METS)
         {
-            float calBurnedLastTenthofSecond = (float)(METS * 3.5 * weightKg * hoursInFixedUpdate); //Calorie burned per second
-            totalCaloriesBurnt += (float)calBurnedLastTenthofSecond;
+            float lastBurn = (METS * weightKg * hoursInFixedUpdate); // Calories burned per run time, calculated at awake()
+            totalCaloriesBurnt += lastBurn;
             int displayText = (int)totalCaloriesBurnt;
             LiveCountText.text = displayText.ToString();
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////
         bool IsRunning = false;
         float[] aveAll;
-
-
         IEnumerator CalorieCounter()
         {
             YieldInstruction waitForFixedUpdate = new WaitForFixedUpdate();
@@ -107,13 +143,11 @@ namespace BeFitMod
             {
                 IsRunning = true;
                 aveAll = new float[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                //Console.WriteLine("Aveall initialized");
                 foreach (XRNodeState ns in nodeStates)
                 {
                     ///////////////////////////////////////////////////////////////////            Head           ///////////////////////////////////////////            Head
                     if (ns.nodeType == XRNode.Head)
                     {
-
                         //Console.WriteLine("Head");
                         ns.TryGetVelocity(out HMDvelocity);
                         if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[0])
@@ -138,8 +172,6 @@ namespace BeFitMod
                             {
                                 aveAll[0] = METSVALShead[4];
                             }
-
-
                         }
                         if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[0])
                         {
@@ -163,8 +195,6 @@ namespace BeFitMod
                             {
                                 aveAll[1] = METSVALShead[4];
                             }
-
-
                         }
                         if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[0])
                         {
@@ -191,7 +221,6 @@ namespace BeFitMod
                         }
                         //Console.WriteLine("Head Complete");
                     }
-                    
                     ///////////////////////////////////////////////////////////////////////            Left Hand          ///////////////////////////////////////////            Left Hand
                     if (ns.nodeType == XRNode.LeftHand)
                     {
@@ -219,8 +248,6 @@ namespace BeFitMod
                             {
                                 aveAll[3] = METSVALShands[4];
                             }
-
-
                         }
                         if (Math.Abs(LHCvelocity.y) >= handvelocityCoefficient[0])
                         {
@@ -244,8 +271,6 @@ namespace BeFitMod
                             {
                                 aveAll[4] = METSVALShands[4];
                             }
-
-
                         }
                         if (Math.Abs(LHCvelocity.z) >= handvelocityCoefficient[0])
                         {
@@ -269,12 +294,9 @@ namespace BeFitMod
                             {
                                 aveAll[5] = METSVALShands[4];
                             }
-
-
                         }
                         //Console.WriteLine("Left Hand Complete");
                     }
-                    
                     /////////////////////////////////////////////////////////////////////           Right Hand        ///////////////////////////////////////////            Right Hand
                     if (ns.nodeType == XRNode.RightHand)
                     {
@@ -353,13 +375,9 @@ namespace BeFitMod
                                 aveAll[8] = METSVALShands[4];
                             }
                         }
-
                         //Console.WriteLine("Right Hand Complete");
                     }
-                    
-
                 }
-                //Console.WriteLine("Analyzing");
                 int count = 0;
                 for (int i = 0; i < 9; i++)
                 {
@@ -376,14 +394,10 @@ namespace BeFitMod
                     Console.WriteLine(counted); //averages
                     calCalc((aveAll[9] / count));
                 }
-                
-                
-                for (float duration = 30f; duration > 0; duration--)
+                for (float duration = timeAccuracy; duration > 0; duration--)
                 {
                     yield return new WaitForFixedUpdate();
                 }
-                //Console.WriteLine("End!");
-
                 IsRunning = false;
             }
         }

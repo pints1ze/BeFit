@@ -39,13 +39,13 @@ namespace BeFitMod
             string currentDate = DateTime.Now.ToString("dd.MM.yyyy");
             if (rdCals != currentDate)
             {
-                Console.WriteLine("Current date being set to: " + currentDate + ". Setting daily calorie count to zero;");
-                ModPrefs.SetInt("fitNessMod", "dailyCalories", dailyCalories);
+                
+                ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories);
+                dailyCalories = 0;
 
             }
             //Init Current Session Counter #
             /////////////////////////////////////////////////////////////////////////
-            //cscText.enabled = visibleCurrentCalories;
             cscText = this.gameObject.AddComponent<TextMeshPro>();
             cscText.renderer.enabled = visibleCurrentCalories;
             cscText.text = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true).ToString();
@@ -102,7 +102,7 @@ namespace BeFitMod
             
             dcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
             dcText.renderer.enabled = visibleDailyCalories;
-            dcText.text = ModPrefs.GetInt("fitNessMod", "dailyCalories", 0, true).ToString();
+            dcText.text = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true).ToString();
             dcText.fontSize = 2;
             dcText.color = Color.cyan;
             dcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
@@ -169,7 +169,7 @@ namespace BeFitMod
 
         void OnDestroy()
         {
-            Console.WriteLine(Plugin.alias + " LOG| Destroying menuDisplay...");
+            Console.WriteLine(Plugin.modLog + "Destroying menuDisplay...");
         }
 
     }
