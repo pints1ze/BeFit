@@ -20,8 +20,10 @@ namespace BeFitMod
         private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
         private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
         private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
-        float playerWeight = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
+        float playerWeightlbs = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
         float weightKg;
+        float playerWeightkgs = ModPrefs.GetInt(Plugin.alias, "weightKGS", 60, true);
+        bool lbsOrKgs = ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true);
         ////////////////////////////////////////////////////////////////////////////////////////
         float timeBFU = (1/90f); // 1 frame per 90, fixed update
         float timeAccuracy = ModPrefs.GetInt(Plugin.alias, "caccVal", 30, true);
@@ -30,11 +32,12 @@ namespace BeFitMod
         ////////////////////////////////////////////////////////////////////////////////////////
         float totalCaloriesBurnt = 0;
         float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 }; /// Find more accurate values
-        float[] METSVALShead = new float[5] { 9, 12, 15, 17, 19 }; //Average of 14.4
+        float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 }; //Average of 14.4
         ////////////////////////////////////////////////////////////////////////////////////////
-        float[] handvelocityCoefficient = new float[5] { 1.2f, 2.65f, 3.75f, 4.75f, 6f };
-        float[] METSVALShands = new float[5] { 3.5f, 5f, 6.75f, 8f, 9f }; //Average of 6.45
+        float[] handvelocityCoefficient = new float[5] { 0.825f, 2f, 2.75f, 3.75f, 5.25f };
+        float[] METSVALShands = new float[5] { 6.35f, 8.75f, 9.5f, 10.35f, 13f }; //Average of 6.45
         ////////////////////////////////////////////////////////////////////////////////////////
+        bool dcc = ModPrefs.GetBool(Plugin.alias, "dcig", true, true);
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
         Vector3 RHCvelocity;
@@ -48,10 +51,20 @@ namespace BeFitMod
             hoursInFixedUpdate = (timeBRU / 3600);
             lvlData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
             Console.WriteLine(Plugin.modLog + " Calorie Counter Awoken for " + lvlData.difficultyBeatmap.level.songName);
-            weightKg = playerWeight * 0.4535924f; // Convert LBS to KG
-            Plugin.safetyEnabled = false; //Debugging mode
+
+            if (lbsOrKgs)
+            {
+                weightKg = playerWeightkgs;
+            }
+            else
+            {
+                weightKg = playerWeightlbs * 0.4535924f;
+            }
+
+            Plugin.safetyEnabled = false;        // Debugging mode
             ////////////////////////////////////////////////////////////////////////////////////////
             LiveCountText = this.gameObject.AddComponent<TextMeshPro>();
+            LiveCountText.renderer.enabled = dcc;
             LiveCountText.text = "0";
             LiveCountText.fontSize = 4;
             LiveCountText.color = Color.white;
@@ -61,6 +74,7 @@ namespace BeFitMod
             ////////////////////////////////////////////////////////////////////////////////////////
             LiveCount = new GameObject("Label");
             TextMeshPro label = LiveCount.AddComponent<TextMeshPro>();
+            label.renderer.enabled = dcc;
             label.text = "Calories";
             label.fontSize = 3;
             label.color = Color.white;
