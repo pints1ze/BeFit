@@ -1,33 +1,29 @@
-# BeFit | fitNessMod | Beat Saber v0.12.x+ supported
+# BeFit | fitNessMod | Beat Saber v0.12.1+ supported
 An IPA Plugin for BeatSaber to add a calorie counter/ tracker
 
-## BeFit v0.2.0 coming soon! 
-v0.1.x will continue to be updated until completed
+#Version 0.2.0
+## Current Features
+-  [x] Count Song Calories    - Displays calories adding up as you play beat saber songs
+-  [x] Count Session Calories - Everytime you open beat saber, a new session starts from 0
+-  [x] Count Daily Calories   - Based on the current date. *Known Bug with playing during date changes*
+-  [x] Count All Calories     - Counts calories since mod has been installed. *Will most likely be removed, or by default hidden from main scren at later date.*
+-  [x] Last Song Played       - Shows calories from last song played.
 
-### What to expect with the new update?
-**The plugin will ask for you to enter your:**
-- [x] weight *choose between metric or lbs*
-- [x] Remove Menu Calorie counts from displaying
-Expect new calorie counts to be around half of version 0.1.x
-The legacy counting algorithm will still be included and be able to be switch on in the new menu.
-
-
-
+- [x] Calories are now based on METS by weight (there is a submenu called Fitness Properties to enter your weight in Kilo Grams or Pounds)
+         - [x] Default weight is 132lbs or 60kg. Lower weight =  < calories burned over time.
+- [x] Hide/Show certain elements (BeFit Mod Submenu)
+- [x] Use legacy calorie counter or not (This won't be in next version)
+- [x] Adjust the accuracy of the counter (Higher Numbers can prevent frame rate drops if any occur, default is a high number. Difference in calories is +/-1 )
+- [x] Vertical and Horizontal body movements now accounted for (still working on accuracy however)
+- [x] Calorie counts are much lower than initial release as the algorithm used is much more accurate and more like an algorithm
 **Calorie counts may be *higher* or *lower* than what the users actually using.**
 
 *All calorie counting software/ devices are estimates and do not accurately represents calories burned!*
 
-## Current Features
-1.  [x] Count Song Calories    - Displays calories adding up as you play beat saber songs
-2.  [x] Count Session Calories - Everytime you open beat saber, a new session starts from 0
-3.  [x] Count Daily Calories   - Based on the current date. *Known Bug with playing during date changes*
-4.  [x] Count All Calories     - Counts calories since mod has been installed. *Will most likely be removed, or by default hidden from main scren at later date.*
-5.  [x] Last Song Played       - Shows calories from last song played.
 
 ## Future Improvments
 Things to add:
 * [x] Calories based on vertical and horizontal movments of headset
-* [ ] ~~Larger distance between blocks has higher coefficient.~~
 * [x] A seperate menu composed of:
   * [x] Toggle individual labels visible on menu screen
   * [ ] Setting daily Calorie goals
@@ -35,7 +31,7 @@ Things to add:
   * [ ] Implement weightloss playlists
   * [ ] View Calorie Statistics
   * [ ] Include a pounds to calories value, 3500 calories ~= 1 lbs
-* [ ] List calorie estimates for songs when selected. *Will be an option to toggle off in the menu*
+* [ ] List calorie estimates for songs when selected. *Will be an option to toggle off in the sub menu*
 
 ## Important!
 There is no way that this mod is accurate! However, I have been trying to set the amount of calories calculated to be as accurate as possible. Using your actual weight will make the value more accurate.
@@ -65,7 +61,7 @@ The METS value combined with the users weight can give close representation of t
 
 Currently, calories are calculated using:
 ~~~
-(((METS * 3.5 * userWEight)/200)/60) * 0.1
+METS * userWEight * runTimeinHours
 ~~~
 METS values are currently determined by the velocity at 5 different intensities. I'm hoping to find a ratio to replace this.
 

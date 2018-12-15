@@ -31,11 +31,11 @@ namespace BeFitMod
         float hoursInFixedUpdate;
         ////////////////////////////////////////////////////////////////////////////////////////
         float totalCaloriesBurnt = 0;
-        float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 }; /// Find more accurate values
-        float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 }; //Average of 14.4
+        float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 };
+        float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 };
         ////////////////////////////////////////////////////////////////////////////////////////
-        float[] handvelocityCoefficient = new float[5] { 0.825f, 2f, 2.75f, 3.75f, 5.25f };
-        float[] METSVALShands = new float[5] { 6.35f, 8.75f, 9.5f, 10.35f, 13f }; //Average of 6.45
+        float[] handvelocityCoefficient = new float[5] { 0.85f, 1.9f, 2.75f, 3.7f, 5f };
+        float[] METSVALShands = new float[5] { 6.35f, 8.8f, 9.75f, 10.5f, 13f }; 
         ////////////////////////////////////////////////////////////////////////////////////////
         bool dcc = ModPrefs.GetBool(Plugin.alias, "dcig", true, true);
         Vector3 HMDvelocity;
@@ -50,8 +50,6 @@ namespace BeFitMod
             timeBRU = (timeAccuracy * timeBFU);
             hoursInFixedUpdate = (timeBRU / 3600);
             lvlData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
-            Console.WriteLine(Plugin.modLog + " Calorie Counter Awoken for " + lvlData.difficultyBeatmap.level.songName);
-
             if (lbsOrKgs)
             {
                 weightKg = playerWeightkgs;
@@ -60,8 +58,6 @@ namespace BeFitMod
             {
                 weightKg = playerWeightlbs * 0.4535924f;
             }
-
-            Plugin.safetyEnabled = false;        // Debugging mode
             ////////////////////////////////////////////////////////////////////////////////////////
             LiveCountText = this.gameObject.AddComponent<TextMeshPro>();
             LiveCountText.renderer.enabled = dcc;
@@ -99,7 +95,7 @@ namespace BeFitMod
             ModPrefs.SetInt(Plugin.alias, "lifeCalories", lifeCalories + calories);
             ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories + calories);
             ModPrefs.SetInt(Plugin.alias, "sessionCalories", currentSessionCals + calories);
-            Console.WriteLine(Plugin.modLog + "Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
+            //Console.WriteLine(Plugin.modLog + "Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         void FixedUpdate()
@@ -124,16 +120,15 @@ namespace BeFitMod
             }
             else if(totalCaloriesBurnt >= 15 && totalCaloriesBurnt <= 24)
             {
-                LiveCountText.color = Color.magenta;
+                LiveCountText.color = Color.blue;
             }
             else if(totalCaloriesBurnt >= 25 && totalCaloriesBurnt <= 34)
             {
-                LiveCountText.color = Color.red;
+                LiveCountText.color = Color.magenta;
             }
             else if(totalCaloriesBurnt >= 35 && totalCaloriesBurnt <= 45)
             {
-                LiveCountText.outlineColor = Color.yellow;
-                LiveCountText.outlineWidth = 0.1f;
+                LiveCountText.color = Color.red;
             }
             
             yield return new WaitForSeconds(10);
@@ -168,7 +163,7 @@ namespace BeFitMod
                         {
                             if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[1])
                             {
-                                aveAll[0] = METSVALShead[0]; //Equivalent to 2 to 3 mph for one hour
+                                aveAll[0] = METSVALShead[0]; 
                             }
                             else if (Math.Abs(HMDvelocity.x) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.x) < headvelocityCoefficient[2])
                             {
@@ -191,7 +186,7 @@ namespace BeFitMod
                         {
                             if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[1])
                             {
-                                aveAll[1] = METSVALShead[0]; ; //Equivalent to 2 to 3 mph for one hour
+                                aveAll[1] = METSVALShead[0]; ;
                             }
                             else if (Math.Abs(HMDvelocity.y) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.y) < headvelocityCoefficient[2])
                             {
@@ -214,7 +209,7 @@ namespace BeFitMod
                         {
                             if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[0] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[1])
                             {
-                                aveAll[2] = METSVALShead[0]; //Equivalent to 2 to 3 mph for one hour
+                                aveAll[2] = METSVALShead[0];
                             }
                             else if (Math.Abs(HMDvelocity.z) >= headvelocityCoefficient[1] && Math.Abs(HMDvelocity.z) < headvelocityCoefficient[2])
                             {
@@ -405,7 +400,7 @@ namespace BeFitMod
                 if (aveAll[9] > 1 && aveAll[9] < 100)
                 {
                     float counted = aveAll[9] / count;
-                    Console.WriteLine(counted); //averages
+                    //Console.WriteLine(counted); //averages
                     calCalc((aveAll[9] / count));
                 }
                 for (float duration = timeAccuracy; duration > 0; duration--)

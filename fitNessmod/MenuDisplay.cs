@@ -39,10 +39,9 @@ namespace BeFitMod
             string currentDate = DateTime.Now.ToString("dd.MM.yyyy");
             if (rdCals != currentDate)
             {
-                
-                ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories);
                 dailyCalories = 0;
-
+                ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories);
+                ModPrefs.SetString(Plugin.alias, "date", currentDate);
             }
             //Init Current Session Counter #
             /////////////////////////////////////////////////////////////////////////
@@ -71,7 +70,6 @@ namespace BeFitMod
             /////////////////////////////////////////////////////////////////////////
             //Init Life Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            
             lcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
             lcText.renderer.enabled = visibleLifeCalories;
             lcText.text = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true).ToString();
@@ -83,7 +81,6 @@ namespace BeFitMod
             lcText.rectTransform.rotation = slantBottom;
             //Init Life Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
-            
             countLC = new GameObject("countLClabel");
             labelLC = countLC.AddComponent<TextMeshPro>();
             labelLC.renderer.enabled = visibleLifeCalories;
@@ -94,12 +91,10 @@ namespace BeFitMod
             labelLC.alignment = TextAlignmentOptions.Center;
             labelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
             labelLC.rectTransform.rotation = slantBottom;
-            
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Daily Calories Counter #
-            /////////////////////////////////////////////////////////////////////////
-            
+            /////////////////////////////////////////////////////////////////////////  
             dcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
             dcText.renderer.enabled = visibleDailyCalories;
             dcText.text = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true).ToString();
@@ -110,8 +105,7 @@ namespace BeFitMod
             dcText.rectTransform.position = menuPosition + new Vector3(0, -0.2f, 0);
             dcText.rectTransform.rotation = slantBottom;
             //Init Daily Calories Counter Label
-            /////////////////////////////////////////////////////////////////////////
-            
+            /////////////////////////////////////////////////////////////////////////  
             countDC = new GameObject("countDClabel");
             labelDC = countDC.AddComponent<TextMeshPro>();
             labelDC.renderer.enabled = visibleDailyCalories;
@@ -121,12 +115,10 @@ namespace BeFitMod
             labelDC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
             labelDC.alignment = TextAlignmentOptions.Center;
             labelDC.rectTransform.position = menuPosition + new Vector3(0, 0, 0);
-            labelDC.rectTransform.rotation = slantBottom;
-            
+            labelDC.rectTransform.rotation = slantBottom; 
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter #
-            /////////////////////////////////////////////////////////////////////////
-            
+            /////////////////////////////////////////////////////////////////////////            
             lgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
             lgcText.renderer.enabled = visibleLastGameCalories;
             lgcText.text = "";
@@ -137,8 +129,7 @@ namespace BeFitMod
             lgcText.rectTransform.position = menuPosition + new Vector3(2.5f, -0.6f, 0f);
             lgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
             //Init Last Game Song name Label // Displays version number on launch
-            /////////////////////////////////////////////////////////////////////////
-            
+            /////////////////////////////////////////////////////////////////////////    
             countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
             countLGC.renderer.enabled = visibleLastGameCalories;
             countLGC.text = version;
@@ -148,11 +139,9 @@ namespace BeFitMod
             countLGC.alignment = TextAlignmentOptions.Center;
             countLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
             countLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter Label
-            /////////////////////////////////////////////////////////////////////////
-            
+            /////////////////////////////////////////////////////////////////////////  
             labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
             labelLG.renderer.enabled = visibleLastGameCalories;
             labelLG.text = "BeFit Mod"; //I'm not set on the name
@@ -162,14 +151,13 @@ namespace BeFitMod
             labelLG.alignment = TextAlignmentOptions.Center;
             labelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
             labelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
-            
             /////////////////////////////////////////////////////////////////////////
             
         }
 
         void OnDestroy()
         {
-            Console.WriteLine(Plugin.modLog + "Destroying menuDisplay...");
+            //Console.WriteLine(Plugin.modLog + "Destroying menuDisplay...");
         }
 
     }

@@ -15,7 +15,7 @@ namespace BeFitMod
     {
         public string Name => "BeFitMod";
         public static string alias = "fitNessMod";
-        public static string modLog = "[" + alias + "| LOG] ";
+        public static string modLog = "[" + alias + " | LOG] ";
         public string Version => "0.2.0"; //New Counting Algorithm
         bool enabled = true;
         public static bool safetyEnabled = false;
@@ -29,11 +29,10 @@ namespace BeFitMod
             ModPrefs.SetString(alias, "version", "v " + Version.ToString());
             ModPrefs.SetInt(alias, "sessionCalories", 0);
             Console.WriteLine(modLog + "Current Date: " + DateTime.Now.ToString("dd.MM.yyyy"));
-            Console.WriteLine(modLog + Name + Version);
+            Console.WriteLine(modLog + Name + " " +  Version);
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-        }
-        
+        } 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             if (!enabled || safetyEnabled) return;  
@@ -82,7 +81,6 @@ namespace BeFitMod
         }
         public void OnLevelWasLoaded(int level)
         {
-
         }
         public void OnLevelWasInitialized(int level)
         {
