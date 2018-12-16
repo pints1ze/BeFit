@@ -42,10 +42,7 @@ namespace BeFitMod
         {
             
             SubMenu befitSettings = SettingsUI.CreateSubMenu("BeFit Settings");
-            BoolViewController legacyMode = befitSettings.AddBool("Legacy Mode?");
-            legacyMode.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "legacyMode", false, true); };
-            legacyMode.SetValue += delegate (bool leg) { ModPrefs.SetBool(Plugin.alias, "legacyMode", leg);
-            };
+
             IntViewController calCountAccuracy = befitSettings.AddInt("FPS Drop Reduction: ", 1, 65, 1);
             calCountAccuracy.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "caccVal", 45, true); }; 
             calCountAccuracy.SetValue += delegate (int acc) { ModPrefs.SetInt(Plugin.alias, "caccVal", acc);

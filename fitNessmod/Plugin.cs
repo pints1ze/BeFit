@@ -23,7 +23,7 @@ namespace BeFitMod
         public bool legacyMode = ModPrefs.GetBool(alias, "legacyMode", false, true);
         MenuDisplay display;
         igcv02x calCounter;
-        CalorieCounter legCalCounter;
+
         public void OnApplicationStart()
         {
             ModPrefs.SetString(alias, "version", "v " + Version.ToString());
@@ -36,19 +36,11 @@ namespace BeFitMod
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             if (!enabled || safetyEnabled) return;  
-            if (arg1.name == "GameCore" && !legacyMode) {  //Launch calories counter
+            if (arg1.name == "GameCore") {  //Launch calories counter
                 Console.WriteLine(modLog + "Scene Loaded succesfully");
-                legCalCounter = null;
                 calCounter = null;
                 calCounter = new GameObject("inGameCalorieCounter").AddComponent<igcv02x>();
                 Console.WriteLine(modLog + "Calorie counter loaded!");
-            }
-            else if(arg1.name == "GameCore" && legacyMode) //Launch Legacy Calorie Counter
-            {
-                Console.WriteLine(modLog + "Legacy Calorie Counter being loaded...");
-                calCounter = null;
-                legCalCounter = null;
-                legCalCounter = new GameObject("legacyCalorieCounter").AddComponent<CalorieCounter>();
             }
             if(arg1.name == "Menu")
             {
