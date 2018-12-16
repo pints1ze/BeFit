@@ -47,7 +47,7 @@ Make sure your game is patched with IPA and CustumUI is installed, [Beat Saber M
 5. That's it! Start the game and beat some calories to death! (I am aware that's not how that works)
 
 
-<img src="https://visco.city/external/images/bfit.PNG" width="600" alt="Menu Layout"/>
+<img src="https://visco.city/external/images/beFitv020.JPG" width="600" alt="Menu Layout"/>
 
 ## How it works
 Users headset, and hand controller velocities are acquired and relative. A METS value is then determined based on the velocity and sent to the calculator to add a tenth of a seconds worth of imformation to be added into the total and be displayed.
