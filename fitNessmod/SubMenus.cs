@@ -9,6 +9,10 @@ namespace BeFitMod
         public static void playerProperties()
         {
             SubMenu fitNessCalculating = SettingsUI.CreateSubMenu("Fitness Properties");
+            BoolViewController shhiWeight = fitNessCalculating.AddBool("Show weight at launch?");
+            shhiWeight.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "mswv", true, true); };
+            shhiWeight.SetValue += delegate (bool mswv) { ModPrefs.SetBool(Plugin.alias, "mswv", mswv); };
+
             BoolViewController units = fitNessCalculating.AddBool("Metric Units? (Kgs, cm)");
             units.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true); };
             units.SetValue += delegate (bool lork) { ModPrefs.SetBool(Plugin.alias, "lbskgs", lork);
@@ -42,8 +46,8 @@ namespace BeFitMod
             legacyMode.GetValue += delegate { return ModPrefs.GetBool(Plugin.alias, "legacyMode", false, true); };
             legacyMode.SetValue += delegate (bool leg) { ModPrefs.SetBool(Plugin.alias, "legacyMode", leg);
             };
-            IntViewController calCountAccuracy = befitSettings.AddInt("FPS Drop Reduction: ", 1, 45, 1);
-            calCountAccuracy.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "caccVal", 30, true); }; 
+            IntViewController calCountAccuracy = befitSettings.AddInt("FPS Drop Reduction: ", 1, 65, 1);
+            calCountAccuracy.GetValue += delegate { return ModPrefs.GetInt(Plugin.alias, "caccVal", 45, true); }; 
             calCountAccuracy.SetValue += delegate (int acc) { ModPrefs.SetInt(Plugin.alias, "caccVal", acc);
             };
 

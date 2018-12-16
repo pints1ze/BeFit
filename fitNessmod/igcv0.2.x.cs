@@ -35,7 +35,7 @@ namespace BeFitMod
         float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 };
         ////////////////////////////////////////////////////////////////////////////////////////
         float[] handvelocityCoefficient = new float[5] { 0.85f, 1.9f, 2.75f, 3.7f, 5f };
-        float[] METSVALShands = new float[5] { 6.35f, 8.8f, 9.75f, 10.5f, 13f }; 
+        float[] METSVALShands = new float[5] { 6.35f, 8.8f, 9.6f, 10.45f, 13f }; 
         ////////////////////////////////////////////////////////////////////////////////////////
         bool dcc = ModPrefs.GetBool(Plugin.alias, "dcig", true, true);
         Vector3 HMDvelocity;

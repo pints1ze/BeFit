@@ -18,6 +18,8 @@ namespace BeFitMod
         public static bool visibleCurrentCalories = ModPrefs.GetBool(Plugin.alias, "csv", true, true);
         public static bool visibleDailyCalories = ModPrefs.GetBool(Plugin.alias, "dcv", true, true);
         public static bool visibleLastGameCalories = ModPrefs.GetBool(Plugin.alias, "lgv", true, true);
+
+        private bool unitMetric = ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true);
         GameObject countCSC;
         GameObject countLC;
         GameObject countDC;
@@ -132,7 +134,7 @@ namespace BeFitMod
             /////////////////////////////////////////////////////////////////////////    
             countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
             countLGC.renderer.enabled = visibleLastGameCalories;
-            countLGC.text = version;
+            countLGC.text = "BeFit Mod " + version;
             countLGC.fontSize = 1.5f;
             countLGC.color = Color.white;
             countLGC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
@@ -142,9 +144,19 @@ namespace BeFitMod
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter Label
             /////////////////////////////////////////////////////////////////////////  
+            if(!ModPrefs.GetBool(Plugin.alias, "mswv", true, true)) { return; }
+            string weight;
+            if(unitMetric)
+            {
+                weight = ModPrefs.GetInt(Plugin.alias, "weightKGS", 60, true) + "<size=60%>kgs";
+            }
+            else
+            {
+                weight = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true) + "<size=60%>lbs";
+            }
             labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
             labelLG.renderer.enabled = visibleLastGameCalories;
-            labelLG.text = "BeFit Mod"; //I'm not set on the name
+            labelLG.text = "<size=100%>Current Weight Setting ~ " + weight; //I'm not set on the name
             labelLG.fontSize = 2f;
             labelLG.color = Color.white;
             labelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
