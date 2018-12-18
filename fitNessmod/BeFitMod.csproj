@@ -71,7 +71,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalorieCounter.cs" />
+    <None Include="CalorieCounter.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="igcv0.2.x.cs" />
     <Compile Include="MenuDisplay.cs" />
     <Compile Include="Plugin.cs" />
