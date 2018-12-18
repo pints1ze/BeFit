@@ -8,31 +8,46 @@ using IllusionPlugin;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using System.IO;
+using System.Collections;
+using Object = UnityEngine.Object;
 
 namespace BeFitMod
 {
     public class Plugin : IPlugin
     {
+        public readonly Config Config = new Config(Path.Combine(Environment.CurrentDirectory, "UserData/befit.cfg"));
+        private readonly WaitForSecondsRealtime _waitForSecondsRealtime = new WaitForSecondsRealtime(0.1f);
+        public static Plugin Instance { get; set; }
+
         public string Name => "BeFitMod";
         public static string alias = "fitNessMod";
         public static string modLog = "[" + alias + " | LOG] ";
-        public string Version => "0.2.0"; //New Counting Algorithm
+        public string Version => "v0.2.2"; //New Counting Algorithm
         bool enabled = true;
         public static bool safetyEnabled = false;
         public static Vector3 counterPosition = new Vector3(-4.25f, 0.5f, 7f);
-        public bool legacyMode = ModPrefs.GetBool(alias, "legacyMode", false, true);
         MenuDisplay display;
         igcv02x calCounter;
 
         public void OnApplicationStart()
         {
+            Instance = this;
             ModPrefs.SetString(alias, "version", "v " + Version.ToString());
-            ModPrefs.SetInt(alias, "sessionCalories", 0);
+            Plugin.Instance.Config.sessionCalories = 0;
             Console.WriteLine(modLog + "Current Date: " + DateTime.Now.ToString("dd.MM.yyyy"));
             Console.WriteLine(modLog + Name + " " +  Version);
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-        } 
+        }
+        public void OnApplicationQuit()
+        {
+            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+            calCounter = null;
+            display = null;
+            Config.Save();
+        }
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             if (!enabled || safetyEnabled) return;  
@@ -50,27 +65,22 @@ namespace BeFitMod
             }
             return;
         }
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (arg0.name == "TutorialEnvironment")
+            if (scene.name == "TutorialEnvironment")
             {
                 safetyEnabled = true; //Disable mod
                 return;
             }
             else { safetyEnabled = false; } //Enable Mod
-            if (arg0.name == "Menu" && !safetyEnabled) /// Settings Submenus 
+            if (scene.name == "Menu" && !safetyEnabled) /// Settings Submenus 
             {
                 SubMenus.Settings();
                 SubMenus.playerProperties();
             }
+
         }
-        public void OnApplicationQuit()
-        {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
-            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
-            calCounter = null;
-            display = null;
-        }
+
         public void OnLevelWasLoaded(int level)
         {
         }

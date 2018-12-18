@@ -17,16 +17,16 @@ namespace BeFitMod
     class igcv02x : MonoBehaviour
     {
         private StandardLevelSceneSetupDataSO lvlData;
-        private int lifeCalories = ModPrefs.GetInt(Plugin.alias, "lifeCalories", 0, true);
-        private int dailyCalories = ModPrefs.GetInt(Plugin.alias, "dailyCalories", 0, true);
-        private int currentSessionCals = ModPrefs.GetInt(Plugin.alias, "sessionCalories", 0, true);
-        float playerWeightlbs = ModPrefs.GetInt(Plugin.alias, "weightLBS", 132, true);
+        private int lifeCalories = Plugin.Instance.Config.lifeCalories;
+        private int dailyCalories = Plugin.Instance.Config.dailyCalories;
+        private int currentSessionCals = Plugin.Instance.Config.sessionCalories;
+        float playerWeightlbs = Plugin.Instance.Config.weightLBS;
         float weightKg;
-        float playerWeightkgs = ModPrefs.GetInt(Plugin.alias, "weightKGS", 60, true);
-        bool lbsOrKgs = ModPrefs.GetBool(Plugin.alias, "lbskgs", false, true);
+        float playerWeightkgs = Plugin.Instance.Config.weightKGS;
+        bool lbsOrKgs = Plugin.Instance.Config.metricUnits;
         ////////////////////////////////////////////////////////////////////////////////////////
         float timeBFU = (1/90f); // 1 frame per 90, fixed update
-        float timeAccuracy = ModPrefs.GetInt(Plugin.alias, "caccVal", 30, true);
+        float timeAccuracy = Plugin.Instance.Config.calorieCounterAccuracy;
         float timeBRU; 
         float hoursInFixedUpdate;
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -35,9 +35,9 @@ namespace BeFitMod
         float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 };
         ////////////////////////////////////////////////////////////////////////////////////////
         float[] handvelocityCoefficient = new float[5] { 0.85f, 1.9f, 2.75f, 3.7f, 5f };
-        float[] METSVALShands = new float[5] { 6.35f, 8.8f, 9.6f, 10.45f, 13f }; 
+        float[] METSVALShands = new float[5] { 6.35f, 8.8f, 9.6f, 10.45f, 13f };
         ////////////////////////////////////////////////////////////////////////////////////////
-        bool dcc = ModPrefs.GetBool(Plugin.alias, "dcig", true, true);
+        bool dcc = Plugin.Instance.Config.inGameCaloriesDisplay;
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
         Vector3 RHCvelocity;
@@ -92,9 +92,9 @@ namespace BeFitMod
             MenuDisplay.cscText.text = (currentSessionCals + calories).ToString();
             MenuDisplay.lcText.text = (lifeCalories + calories).ToString();
             MenuDisplay.dcText.text = (dailyCalories + calories).ToString();
-            ModPrefs.SetInt(Plugin.alias, "lifeCalories", lifeCalories + calories);
-            ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories + calories);
-            ModPrefs.SetInt(Plugin.alias, "sessionCalories", currentSessionCals + calories);
+            Plugin.Instance.Config.lifeCalories = lifeCalories + calories;
+            Plugin.Instance.Config.dailyCalories = dailyCalories + calories;
+            Plugin.Instance.Config.sessionCalories = currentSessionCals + calories;
             //Console.WriteLine(Plugin.modLog + "Current Calories: " + ModPrefs.GetInt("fitNessMod", "sessionCalories", 0, true));
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
