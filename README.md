@@ -1,7 +1,7 @@
 # BeFit | fitNessMod | Beat Saber v0.12.1+ supported
 An IPA Plugin for BeatSaber to add a calorie counter/ tracker
 
-# Version 0.2.0
+# Version 0.2.2
 ## Current Features
 -  [x] Count Song Calories    - Displays calories adding up as you play beat saber songs
 -  [x] Count Session Calories - Everytime you open beat saber, a new session starts from 0
