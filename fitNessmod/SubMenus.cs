@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using CustomUI.Settings;
-using IllusionPlugin;
 
 namespace BeFitMod
 {

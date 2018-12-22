@@ -1,6 +1,6 @@
 ﻿/* BeFit | fitNessMod
  * Purpose: Count and store calories burned while playing BeatSaber
- * Date: 12/14/18
+ * Date: 12/22/18
  * Origin Contributor: Viscoci
  * Contributors: --
  * */
@@ -9,8 +9,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.IO;
-using System.Collections;
-using Object = UnityEngine.Object;
 
 namespace BeFitMod
 {
@@ -23,17 +21,17 @@ namespace BeFitMod
         public string Name => "BeFitMod";
         public static string alias = "fitNessMod";
         public static string modLog = "[" + alias + " | LOG] ";
-        public string Version => "v0.2.2"; //New Counting Algorithm
+        public string Version => "v0.2.3"; //New Counting Algorithm
         bool enabled = true;
         public static bool safetyEnabled = false;
-        public static Vector3 counterPosition = new Vector3(-4.25f, 0.5f, 7f);
+        public static Vector3 counterPosition = new Vector3(-4.5f, 0.5f, 7f);
         MenuDisplay display;
         igcv02x calCounter;
 
         public void OnApplicationStart()
         {
             Instance = this;
-            ModPrefs.SetString(alias, "version", "v " + Version.ToString());
+            ModPrefs.SetString(alias, "version", Version.ToString());
             Plugin.Instance.Config.sessionCalories = 0;
             Console.WriteLine(modLog + "Current Date: " + DateTime.Now.ToString("dd.MM.yyyy"));
             Console.WriteLine(modLog + Name + " " +  Version);
@@ -77,7 +75,9 @@ namespace BeFitMod
             {
                 SubMenus.Settings();
                 SubMenus.playerProperties();
+
             }
+
 
         }
 
@@ -88,7 +88,7 @@ namespace BeFitMod
         {
         }
         public void OnUpdate()
-        {
+        { 
         }
         public void OnFixedUpdate()
         {
