@@ -12,7 +12,7 @@ namespace BeFitMod
         private int lifeCalories = Plugin.Instance.Config.lifeCalories;
         private int dailyCalories = Plugin.Instance.Config.dailyCalories;
         private int currentSessionCals = Plugin.Instance.Config.sessionCalories;
-        private string rdCals = ModPrefs.GetString(Plugin.alias, "date", "dd.MM.yyyy", true);
+        private string rdCals = ModPrefs.GetString(Plugin.alias, "date", "MM.dd.yyyy HH:mm:ss tt", true);
         private string version = ModPrefs.GetString(Plugin.alias, "version", "-.-.-", false);
         public static bool visibleLifeCalories = Plugin.Instance.Config.lifeCaloriesDisplay;
         public static bool visibleCurrentCalories = Plugin.Instance.Config.sessionCaloriesDisplay;
@@ -38,8 +38,14 @@ namespace BeFitMod
         }
         void Init()
         {
-            string currentDate = DateTime.Now.ToString("dd.MM.yyyy");
-            if (rdCals != currentDate)
+
+            string currentDate = DateTime.Now.ToString("MM.dd.yyyy HH:mm:ss tt");
+            DateTime currentDateTime;
+            DateTime.TryParse(currentDate, out currentDateTime);
+            DateTime lastDateCheck;
+            DateTime.TryParse(rdCals, out lastDateCheck);
+            
+            if ((currentDateTime - lastDateCheck).TotalHours > 16)
             {
                 dailyCalories = 0;
                 ModPrefs.SetInt(Plugin.alias, "dailyCalories", dailyCalories);
@@ -156,7 +162,7 @@ namespace BeFitMod
             }
             labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
             labelLG.renderer.enabled = visibleLastGameCalories;
-            labelLG.text = "<size=100%>Current Weight Setting ~ " + weight; //I'm not set on the name
+            labelLG.text = "<size=100%>Current Weight Setting ~ " + weight;
             labelLG.fontSize = 2f;
             labelLG.color = Color.white;
             labelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
