@@ -14,19 +14,19 @@ using TMPro;
 
 namespace BeFitMod
 {
-    class igcv02x : MonoBehaviour
+    class Igcv02x : MonoBehaviour
     {
         private StandardLevelSceneSetupDataSO lvlData;
-        private int lifeCalories = Plugin.Instance.Config.lifeCalories;
-        private int dailyCalories = Plugin.Instance.Config.dailyCalories;
-        private int currentSessionCals = Plugin.Instance.Config.sessionCalories;
-        float playerWeightlbs = Plugin.Instance.Config.weightLBS;
+        private int lifeCalories = Plugin.Instance.mainConfig.lifeCalories;
+        private int dailyCalories = Plugin.Instance.mainConfig.dailyCalories;
+        private int currentSessionCals = Plugin.Instance.mainConfig.sessionCalories;
+        float playerWeightlbs = Plugin.Instance.mainConfig.weightLBS;
         float weightKg;
-        float playerWeightkgs = Plugin.Instance.Config.weightKGS;
-        bool lbsOrKgs = Plugin.Instance.Config.metricUnits;
+        float playerWeightkgs = Plugin.Instance.mainConfig.weightKGS;
+        bool lbsOrKgs = Plugin.Instance.mainConfig.metricUnits;
         ////////////////////////////////////////////////////////////////////////////////////////
         float timeBFU = (1/90f); // 1 frame per 90, fixed update
-        float timeAccuracy = Plugin.Instance.Config.calorieCounterAccuracy;
+        float timeAccuracy = Plugin.Instance.mainConfig.calorieCounterAccuracy;
         float timeBRU; 
         float hoursInFixedUpdate;
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -34,10 +34,10 @@ namespace BeFitMod
         float[] headvelocityCoefficient = new float[5] { 1f, 1.4f, 2, 3f, 4 };
         float[] METSVALShead = new float[5] { 14f, 15, 16, 17, 19 };
         ////////////////////////////////////////////////////////////////////////////////////////
-        float[] handvelocityCoefficient = new float[5] { 0.85f, 1.9f, 2.75f, 3.7f, 5f };
-        float[] METSVALShands = new float[5] { 6.2f, 8.8f, 9.6f, 10.45f, 13f };
+        float[] handvelocityCoefficient = new float[5] { 0.95f, 1.9f, 2.75f, 3.7f, 5f };
+        float[] METSVALShands = new float[5] { 6.2f, 8.8f, 9.6f, 10.45f, 14f };
         ////////////////////////////////////////////////////////////////////////////////////////
-        bool dcc = Plugin.Instance.Config.inGameCaloriesDisplay;
+        bool dcc = Plugin.Instance.mainConfig.inGameCaloriesDisplay;
         Vector3 HMDvelocity;
         Vector3 LHCvelocity;
         Vector3 RHCvelocity;
@@ -86,15 +86,15 @@ namespace BeFitMod
             METSVALShead = null;
             handvelocityCoefficient = null;
             METSVALShands = null;
-            MenuDisplay.countLGC.text = lvlData.difficultyBeatmap.level.songName;
-            MenuDisplay.labelLG.text = "Last Played Song";
-            MenuDisplay.lgcText.text = (calories).ToString();
-            MenuDisplay.cscText.text = (currentSessionCals + calories).ToString();
-            MenuDisplay.lcText.text = (lifeCalories + calories).ToString();
-            MenuDisplay.dcText.text = (dailyCalories + calories).ToString();
-            Plugin.Instance.Config.lifeCalories = lifeCalories + calories;
-            Plugin.Instance.Config.dailyCalories = dailyCalories + calories;
-            Plugin.Instance.Config.sessionCalories = currentSessionCals + calories;
+            MenuDisplay.CountLGC.text = lvlData.difficultyBeatmap.level.songName;
+            MenuDisplay.LabelLG.text = "Last Played Song";
+            MenuDisplay.LgcText.text = (calories).ToString();
+            MenuDisplay.CscText.text = (currentSessionCals + calories).ToString();
+            MenuDisplay.LcText.text = (lifeCalories + calories).ToString();
+            MenuDisplay.DcText.text = (dailyCalories + calories).ToString();
+            Plugin.Instance.mainConfig.lifeCalories = lifeCalories + calories;
+            Plugin.Instance.mainConfig.dailyCalories = dailyCalories + calories;
+            Plugin.Instance.mainConfig.sessionCalories = currentSessionCals + calories;
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         void FixedUpdate()
@@ -106,11 +106,11 @@ namespace BeFitMod
             }
             else if (!colChange)
             {
-                StartCoroutine("colorChange");
+                StartCoroutine("ColorChange");
             }
         }
         bool colChange = false;
-        IEnumerator colorChange()
+        IEnumerator ColorChange()
         {
             colChange = true;
             if (totalCaloriesBurnt >= 8 && totalCaloriesBurnt <= 14)
@@ -134,7 +134,7 @@ namespace BeFitMod
             colChange = false;
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        private void calCalc(float METS)
+        private void CalCalc(float METS)
         {
             float lastBurn = (METS * weightKg * hoursInFixedUpdate); // Calories burned per run time, calculated at awake()
             totalCaloriesBurnt += lastBurn;
@@ -400,7 +400,7 @@ namespace BeFitMod
                 {
                     float counted = aveAll[9] / count;
                     //Console.WriteLine(counted); //averages
-                    calCalc((aveAll[9] / count));
+                    CalCalc((aveAll[9] / count));
                 }
                 for (float duration = timeAccuracy; duration > 0; duration--)
                 {
