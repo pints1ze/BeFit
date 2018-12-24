@@ -9,7 +9,7 @@ using CustomUI.Utilities;
 using VRUI;
 using UnityEngine.Events;
 using System.Collections.Generic;
-
+using System.IO;
 namespace BeFitMod
 {
     class BeFitListViewController : VRUIViewController, TableView.IDataSource
@@ -19,6 +19,7 @@ namespace BeFitMod
         public Button _pageUpButton;
         public Button _pageDownButton;
         public Button _backButton;
+        public Button _newUserButton;
         public TextMeshProUGUI _versionNumber;
 
         public TableView _beFitTableView;
@@ -26,8 +27,8 @@ namespace BeFitMod
 
         private List<User> _user = new List<User>();
         public Action beFitListBackWasPressed;
+        public Action beFitListNewUserPressed;
 
-        private bool PreviewStatus;
 
 
         protected override void DidActivate(bool firstActivation, ActivationType type)
@@ -65,7 +66,7 @@ namespace BeFitMod
                     _beFitTableView.didSelectRowEvent += _BeFitTableView_DidSelectRowEvent;
 
                     _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), container, false);
-                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 30f);//-14
+                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 30f);
                     _pageUpButton.interactable = true;
                     _pageUpButton.onClick.AddListener(delegate ()
                     {
@@ -73,11 +74,25 @@ namespace BeFitMod
                     });
 
                     _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), container, false);
-                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -30f);//8
+                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -30f);
                     _pageDownButton.interactable = true;
                     _pageDownButton.onClick.AddListener(delegate ()
                     {
                         _beFitTableView.PageScrollDown();
+                    });
+
+                    _newUserButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PlayButton")), container, false);
+                    (_newUserButton.transform as RectTransform).anchoredPosition = new Vector2(40f, -30f);
+                    BeatSaberUIExtensions.SetButtonText(_newUserButton, "New User");
+                    _newUserButton.interactable = true;
+                    _newUserButton.onClick.AddListener(delegate ()
+                    {
+                        UserConfigs newUser = new UserConfigs(Path.Combine(Application.dataPath, "../UserData/BeFitUsers/Player" + DateTime.Now.Millisecond + ".cfg"));
+                        newUser.Save();
+                        UnLoadUsers();
+                        LoadUsers(firstActivation);
+                        RefreshScreen();
+                        if (beFitListNewUserPressed != null) beFitListNewUserPressed();
                     });
 
                     _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "Text")), rectTransform, false);
@@ -98,6 +113,8 @@ namespace BeFitMod
                         _backButton.onClick.AddListener(delegate ()
                         {
                             if (beFitListBackWasPressed != null) beFitListBackWasPressed();
+                            UnLoadUsers();
+                            
                         });
                     }
                 }
@@ -157,15 +174,18 @@ namespace BeFitMod
             Plugin.Instance._currentUser = _user[index].Path;
             selected = index;
             Console.WriteLine($"Selected user {_user[index].Name} weighing {_user[index].Weight}");
-            if (PreviewStatus)
-            {
-                return;
-            }
 
             if(_user[index] != null)
             {
                 try
                 {
+                    BeFitStatsViewController.titleText.text =  _user[index].Name.ToString();
+                    BeFitStatsViewController.userWeight.text = _user[index].Weight.ToString();
+                    BeFitStatsViewController.curSessBurn.text =  _user[index].SessionCalories.ToString();
+                    BeFitStatsViewController.dailyCalBurn.text = _user[index].DailyCalories.ToString();
+                    BeFitStatsViewController.lifeCalBurn.text =  _user[index].LifeCalories.ToString();
+                    BeFitStatsViewController.dailyCalGoal.text = _user[index].DailyGoal.ToString();
+                    BeFitStatsViewController.weeklyCalGoal.text =  _user[index].WeeklyGoal.ToString();
                     Console.WriteLine("Index: " + index);
                 }
                 catch(NullReferenceException e)
@@ -188,16 +208,25 @@ namespace BeFitMod
         public TableCell CellForRow(int row)
         {
             LevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
-
+            
+            
             var BeFit = _user.ElementAtOrDefault(row);
-
             _tableCell.songName = BeFit.Name;
             _tableCell.author = BeFit.Weight.ToString();
             _tableCell.coverImage = Sprite.Create(Texture2D.blackTexture, new Rect(), Vector2.zero);
             _tableCell.reuseIdentifier = "BeFitListCell";
             Console.WriteLine("I'm too tired for this shit");
+
             
             return _tableCell;
+        }
+        public void UnLoadUsers()
+        {
+            Console.WriteLine("Unloading Users");
+            for (int i = 0; i < _user.Count; i++)
+            {
+                _user.Remove(_user[i]);
+            }
         }
 
         public void LoadUsers(bool FirstRun)
@@ -207,12 +236,16 @@ namespace BeFitMod
             {
                 foreach (string use in Plugin.RetrieveUsers())
                 {
+                    if(use == null)
+                    {
+                        return;
+                    }
                     UserConfigs tempUserCfgs = new UserConfigs(use);
                     User tempuse = new User();
                     tempuse.Name = tempUserCfgs.name;
                     tempuse.Path = tempUserCfgs.FilePath;
-                    if (tempUserCfgs.metricUnits) tempuse.Weight = tempUserCfgs.weightKGS;
-                    else { tempuse.Weight = tempUserCfgs.weightLBS; }
+                    if (tempUserCfgs.metricUnits) tempuse.Weight = tempUserCfgs.weightKGS + "<size=60%>kgs";
+                    else { tempuse.Weight = tempUserCfgs.weightLBS + "<size=60%>lbs"; }
                     tempuse.WeeklyGoal = tempUserCfgs.weeklyCalorieGoal;
                     tempuse.DailyGoal = tempUserCfgs.dailyCalorieGoal;
                     tempuse.LifeCalories = tempUserCfgs.lifeCalories;

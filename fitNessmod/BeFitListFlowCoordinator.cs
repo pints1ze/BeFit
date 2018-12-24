@@ -26,6 +26,7 @@ namespace BeFitMod
             {
                 _beFitListViewController = BeatSaberUI.CreateViewController<BeFitListViewController>();
                 _beFitListViewController.beFitListBackWasPressed += Dismiss;
+                _beFitListViewController.beFitListNewUserPressed += Dismiss;
             }
             if(activationType == FlowCoordinator.ActivationType.AddedToHierarchy)
             {

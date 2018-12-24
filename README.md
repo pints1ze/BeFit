@@ -1,21 +1,14 @@
 # BeFit | fitNessMod | Beat Saber v0.12.1+ supported
 An IPA Plugin for BeatSaber to add a calorie counter/ tracker
+## Current Version 0.2.2
+### Version 0.3.0 On its way!
+#### Release will come with new features
+- A new menu to change users and view stats
+- Multiple Users Configurations (Add, Delete, Customize profiles)
+- Daily Calorie Counter Fixed for 18 hours periods
+- Reset Daily count button!
+- Co-release with Random Song mod *Originally by Taz* (Play Random Songs without knowing what it will be before it plays)
 
-# Version 0.2.2
-## Current Features
--  [x] Count Song Calories    - Displays calories adding up as you play beat saber songs
--  [x] Count Session Calories - Everytime you open beat saber, a new session starts from 0
--  [x] Count Daily Calories   - Based on the current date. *Known Bug with playing during date changes*
--  [x] Count All Calories     - Counts calories since mod has been installed. *Will most likely be removed, or by default hidden from main scren at later date.*
--  [x] Last Song Played       - Shows calories from last song played.
-
-- [x] Calories are now based on METS by weight (there is a submenu called Fitness Properties to enter your weight in Kilo Grams or Pounds)
-         - [x] Default weight is 132lbs or 60kg. Lower weight =  < calories burned over time.
-- [x] Hide/Show certain elements (BeFit Mod Submenu)
-- [x] Use legacy calorie counter or not (This won't be in next version)
-- [x] Adjust the accuracy of the counter (Higher Numbers can prevent frame rate drops if any occur, default is a high number. Difference in calories is +/-1 )
-- [x] Vertical and Horizontal body movements now accounted for (still working on accuracy however)
-- [x] Calorie counts are much lower than initial release as the algorithm used is much more accurate and more like an algorithm
 **Calorie counts may be *higher* or *lower* than what the users actually using.**
 
 *All calorie counting software/ devices are estimates and do not accurately represents calories burned!*
@@ -26,10 +19,10 @@ Things to add:
 * [x] Calories based on vertical and horizontal movments of headset
 * [x] A seperate menu composed of:
   * [x] Toggle individual labels visible on menu screen
-  * [ ] Setting daily Calorie goals
-  * [ ] Setting Weekly Calorie Goals
+  * [x] Setting daily Calorie goals
+  * [x] Setting Weekly Calorie Goals
   * [ ] Implement weightloss playlists
-  * [ ] View Calorie Statistics
+  * [x] View Calorie Statistics
   * [ ] Include a pounds to calories value, 3500 calories ~= 1 lbs
 * [ ] List calorie estimates for songs when selected. *Will be an option to toggle off in the sub menu*
 

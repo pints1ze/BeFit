@@ -24,7 +24,7 @@ namespace BeFitMod
             get; set;
         }
 
-        public int Weight {
+        public string Weight {
             get; set;
         }
 
@@ -57,6 +57,7 @@ namespace BeFitMod
     {
         private MainFlowCoordinator _mainFlowCoordinator;
         public static BeFitUI _instance;
+        public class BeFitListFlowCoordinator : GenericFlowCoordinator<BeFitListViewController, BeFitStatsViewController> { };
         public BeFitListFlowCoordinator _beFitListFlowCoordinator;
 
         internal static void OnLoad()
@@ -105,6 +106,14 @@ namespace BeFitMod
                     {
                         _beFitListFlowCoordinator = new GameObject("BeFitListFlowCoordinator").AddComponent<BeFitListFlowCoordinator>();
                         _beFitListFlowCoordinator.mainFlowCoordinator = _mainFlowCoordinator;
+                        _beFitListFlowCoordinator.OnContentCreated = (content) =>
+                        {
+                            content.beFitListBackWasPressed = () =>
+                            {
+                                _mainFlowCoordinator.InvokePrivateMethod("DismissFlowCoordinator", new object[] { _beFitListFlowCoordinator, null, false });
+                            };
+                            return "User Select";
+                        };
                     }
                     _mainFlowCoordinator.InvokePrivateMethod("PresentFlowCoordinator", new object[] { _beFitListFlowCoordinator, null, false, false });
                 });
