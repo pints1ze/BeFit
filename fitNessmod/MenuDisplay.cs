@@ -9,29 +9,29 @@ namespace BeFitMod
     {
         public static Vector3 menuPosition = new Vector3(0f, 0.3f, 1.25f);
         public static Quaternion slantBottom = Quaternion.Euler(35, 0, 0);
-        private int lifeCalories = Plugin.Instance.Config.lifeCalories;
-        private int dailyCalories = Plugin.Instance.Config.dailyCalories;
-        private int currentSessionCals = Plugin.Instance.Config.sessionCalories;
+        private int lifeCalories = Plugin.Instance.mainConfig.lifeCalories;
+        private int dailyCalories = Plugin.Instance.mainConfig.dailyCalories;
+        private int currentSessionCals = Plugin.Instance.mainConfig.sessionCalories;
         private string rdCals = ModPrefs.GetString(Plugin.alias, "date", "MM.dd.yyyy HH:mm:ss tt", true);
         private string version = ModPrefs.GetString(Plugin.alias, "version", "-.-.-", false);
-        public static bool visibleLifeCalories = Plugin.Instance.Config.lifeCaloriesDisplay;
-        public static bool visibleCurrentCalories = Plugin.Instance.Config.sessionCaloriesDisplay;
-        public static bool visibleDailyCalories = Plugin.Instance.Config.dailyCaloriesDisplay;
-        public static bool visibleLastGameCalories = Plugin.Instance.Config.lastGameCaloriesDisplay;
+        public static bool visibleLifeCalories = Plugin.Instance.mainConfig.lifeCaloriesDisplay;
+        public static bool visibleCurrentCalories = Plugin.Instance.mainConfig.sessionCaloriesDisplay;
+        public static bool visibleDailyCalories = Plugin.Instance.mainConfig.dailyCaloriesDisplay;
+        public static bool visibleLastGameCalories = Plugin.Instance.mainConfig.lastGameCaloriesDisplay;
 
-        private bool unitMetric = Plugin.Instance.Config.metricUnits;
+        private bool unitMetric = Plugin.Instance.mainConfig.metricUnits;
         GameObject countCSC;
         GameObject countLC;
         GameObject countDC;
-        public static TextMeshPro countLGC { get; set; } //Last Game
-        public static TextMeshPro cscText { get; set; } //Current Session Calories count
-        public static TextMeshPro lcText { get; set; } //Life Calories count
-        public static TextMeshPro dcText { get; set; } //Daily calories count
-        public static TextMeshPro lgcText { get; set; } //Last Game Calories Count
-        public static TextMeshPro labelLG { get; set; } //Last Game Label
-        public static TextMeshPro labelcsc { get; set; } //Current Session Label
-        public static TextMeshPro labelLC { get; set; } //Life Calories label
-        public static TextMeshPro labelDC { get; set; } //Daily Calories Label
+        public static TextMeshPro CountLGC { get; set; } //Last Game
+        public static TextMeshPro CscText { get; set; } //Current Session Calories count
+        public static TextMeshPro LcText { get; set; } //Life Calories count
+        public static TextMeshPro DcText { get; set; } //Daily calories count
+        public static TextMeshPro LgcText { get; set; } //Last Game Calories Count
+        public static TextMeshPro LabelLG { get; set; } //Last Game Label
+        public static TextMeshPro Labelcsc { get; set; } //Current Session Label
+        public static TextMeshPro LabelLC { get; set; } //Life Calories label
+        public static TextMeshPro LabelDC { get; set; } //Daily Calories Label
         void Awake()
         {
             Init();
@@ -53,122 +53,122 @@ namespace BeFitMod
             }
             //Init Current Session Counter #
             /////////////////////////////////////////////////////////////////////////
-            cscText = this.gameObject.AddComponent<TextMeshPro>();
-            cscText.renderer.enabled = visibleCurrentCalories;
-            cscText.text = Plugin.Instance.Config.sessionCalories.ToString();
-            cscText.fontSize = 2;
-            cscText.color = Color.cyan;
-            cscText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            cscText.alignment = TextAlignmentOptions.Center;
-            cscText.rectTransform.position = menuPosition + new Vector3(-1, -0.2f, 0);
-            cscText.rectTransform.rotation = slantBottom;
+            CscText = this.gameObject.AddComponent<TextMeshPro>();
+            CscText.renderer.enabled = visibleCurrentCalories;
+            CscText.text = Plugin.Instance.mainConfig.sessionCalories.ToString();
+            CscText.fontSize = 2;
+            CscText.color = Color.cyan;
+            CscText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            CscText.alignment = TextAlignmentOptions.Center;
+            CscText.rectTransform.position = menuPosition + new Vector3(-1, -0.2f, 0);
+            CscText.rectTransform.rotation = slantBottom;
             //Init Current Sesion Counter Label
             /////////////////////////////////////////////////////////////////////////
             countCSC = new GameObject("countCSClabel");
-            labelcsc = countCSC.AddComponent<TextMeshPro>();
-            labelcsc.renderer.enabled = visibleCurrentCalories;
-            labelcsc.text = "Current Session Calories";
-            labelcsc.fontSize = 1;
-            labelcsc.color = Color.white;
-            labelcsc.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            labelcsc.alignment = TextAlignmentOptions.Center;
-            labelcsc.rectTransform.position = menuPosition + new Vector3(-1f, 0, 0);
-            labelcsc.rectTransform.rotation = slantBottom;
+            Labelcsc = countCSC.AddComponent<TextMeshPro>();
+            Labelcsc.renderer.enabled = visibleCurrentCalories;
+            Labelcsc.text = "Current Session Calories";
+            Labelcsc.fontSize = 1;
+            Labelcsc.color = Color.white;
+            Labelcsc.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            Labelcsc.alignment = TextAlignmentOptions.Center;
+            Labelcsc.rectTransform.position = menuPosition + new Vector3(-1f, 0, 0);
+            Labelcsc.rectTransform.rotation = slantBottom;
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Life Calories Counter #
             /////////////////////////////////////////////////////////////////////////
-            lcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
-            lcText.renderer.enabled = visibleLifeCalories;
-            lcText.text = Plugin.Instance.Config.lifeCalories.ToString();
-            lcText.fontSize = 2;
-            lcText.color = Color.cyan;
-            lcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            lcText.alignment = TextAlignmentOptions.Center;
-            lcText.rectTransform.position = menuPosition + new Vector3(1, -0.2f, 0);
-            lcText.rectTransform.rotation = slantBottom;
+            LcText = new GameObject("lifeCalories").gameObject.AddComponent<TextMeshPro>();
+            LcText.renderer.enabled = visibleLifeCalories;
+            LcText.text = Plugin.Instance.mainConfig.lifeCalories.ToString();
+            LcText.fontSize = 2;
+            LcText.color = Color.cyan;
+            LcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            LcText.alignment = TextAlignmentOptions.Center;
+            LcText.rectTransform.position = menuPosition + new Vector3(1, -0.2f, 0);
+            LcText.rectTransform.rotation = slantBottom;
             //Init Life Calories Counter Label
             /////////////////////////////////////////////////////////////////////////
             countLC = new GameObject("countLClabel");
-            labelLC = countLC.AddComponent<TextMeshPro>();
-            labelLC.renderer.enabled = visibleLifeCalories;
-            labelLC.text = "All Calories";
-            labelLC.fontSize = 1;
-            labelLC.color = Color.white;
-            labelLC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            labelLC.alignment = TextAlignmentOptions.Center;
-            labelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
-            labelLC.rectTransform.rotation = slantBottom;
+            LabelLC = countLC.AddComponent<TextMeshPro>();
+            LabelLC.renderer.enabled = visibleLifeCalories;
+            LabelLC.text = "All Calories";
+            LabelLC.fontSize = 1;
+            LabelLC.color = Color.white;
+            LabelLC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            LabelLC.alignment = TextAlignmentOptions.Center;
+            LabelLC.rectTransform.position = menuPosition + new Vector3(1, 0, 0);
+            LabelLC.rectTransform.rotation = slantBottom;
             /////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////
             //Init Daily Calories Counter #
             /////////////////////////////////////////////////////////////////////////  
-            dcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
-            dcText.renderer.enabled = visibleDailyCalories;
-            dcText.text = Plugin.Instance.Config.dailyCalories.ToString();
-            dcText.fontSize = 2;
-            dcText.color = Color.cyan;
-            dcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            dcText.alignment = TextAlignmentOptions.Center;
-            dcText.rectTransform.position = menuPosition + new Vector3(0, -0.2f, 0);
-            dcText.rectTransform.rotation = slantBottom;
+            DcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
+            DcText.renderer.enabled = visibleDailyCalories;
+            DcText.text = Plugin.Instance.mainConfig.dailyCalories.ToString();
+            DcText.fontSize = 2;
+            DcText.color = Color.cyan;
+            DcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            DcText.alignment = TextAlignmentOptions.Center;
+            DcText.rectTransform.position = menuPosition + new Vector3(0, -0.2f, 0);
+            DcText.rectTransform.rotation = slantBottom;
             //Init Daily Calories Counter Label
             /////////////////////////////////////////////////////////////////////////  
             countDC = new GameObject("countDClabel");
-            labelDC = countDC.AddComponent<TextMeshPro>();
-            labelDC.renderer.enabled = visibleDailyCalories;
-            labelDC.text = "Daily Calories";
-            labelDC.fontSize = 1;
-            labelDC.color = Color.white;
-            labelDC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            labelDC.alignment = TextAlignmentOptions.Center;
-            labelDC.rectTransform.position = menuPosition + new Vector3(0, 0, 0);
-            labelDC.rectTransform.rotation = slantBottom; 
+            LabelDC = countDC.AddComponent<TextMeshPro>();
+            LabelDC.renderer.enabled = visibleDailyCalories;
+            LabelDC.text = "Daily Calories";
+            LabelDC.fontSize = 1;
+            LabelDC.color = Color.white;
+            LabelDC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            LabelDC.alignment = TextAlignmentOptions.Center;
+            LabelDC.rectTransform.position = menuPosition + new Vector3(0, 0, 0);
+            LabelDC.rectTransform.rotation = slantBottom; 
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter #
             /////////////////////////////////////////////////////////////////////////            
-            lgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
-            lgcText.renderer.enabled = visibleLastGameCalories;
-            lgcText.text = "";
-            lgcText.fontSize = 2;
-            lgcText.color = Color.cyan;
-            lgcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            lgcText.alignment = TextAlignmentOptions.Center;
-            lgcText.rectTransform.position = menuPosition + new Vector3(2.5f, -0.6f, 0f);
-            lgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            LgcText = new GameObject("dailyCalories").gameObject.AddComponent<TextMeshPro>();
+            LgcText.renderer.enabled = visibleLastGameCalories;
+            LgcText.text = "";
+            LgcText.fontSize = 2;
+            LgcText.color = Color.cyan;
+            LgcText.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            LgcText.alignment = TextAlignmentOptions.Center;
+            LgcText.rectTransform.position = menuPosition + new Vector3(2.5f, -0.6f, 0f);
+            LgcText.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
             //Init Last Game Song name Label // Displays version number on launch
             /////////////////////////////////////////////////////////////////////////    
-            countLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
-            countLGC.renderer.enabled = visibleLastGameCalories;
-            countLGC.text = "BeFit Mod " + version;
-            countLGC.fontSize = 1.5f;
-            countLGC.color = Color.white;
-            countLGC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            countLGC.alignment = TextAlignmentOptions.Center;
-            countLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
-            countLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            CountLGC = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            CountLGC.renderer.enabled = visibleLastGameCalories;
+            CountLGC.text = "BeFit Mod " + version;
+            CountLGC.fontSize = 1.5f;
+            CountLGC.color = Color.white;
+            CountLGC.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            CountLGC.alignment = TextAlignmentOptions.Center;
+            CountLGC.rectTransform.position = menuPosition + new Vector3(2.5f, -0.4f, 0f);
+            CountLGC.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
             /////////////////////////////////////////////////////////////////////////
             //Init Last Game Calories Counter Label
             /////////////////////////////////////////////////////////////////////////  
-            if(!Plugin.Instance.Config.displayWeightOnLaunch) { return; }
+            if(!Plugin.Instance.mainConfig.displayWeightOnLaunch) { return; }
             string weight;
             if(unitMetric)
             {
-                weight = Plugin.Instance.Config.weightKGS + "<size=60%>kgs";
+                weight = Plugin.Instance.mainConfig.weightKGS + "<size=60%>kgs";
             }
             else
             {
-                weight = Plugin.Instance.Config.weightLBS + "<size=60%>lbs";
+                weight = Plugin.Instance.mainConfig.weightLBS + "<size=60%>lbs";
             }
-            labelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
-            labelLG.renderer.enabled = visibleLastGameCalories;
-            labelLG.text = "<size=100%>Current Weight Setting ~ " + weight;
-            labelLG.fontSize = 2f;
-            labelLG.color = Color.white;
-            labelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
-            labelLG.alignment = TextAlignmentOptions.Center;
-            labelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
-            labelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
+            LabelLG = new GameObject("countLGClabel").gameObject.AddComponent<TextMeshPro>();
+            LabelLG.renderer.enabled = visibleLastGameCalories;
+            LabelLG.text = "<size=100%>Current Weight Setting ~ " + weight;
+            LabelLG.fontSize = 2f;
+            LabelLG.color = Color.white;
+            LabelLG.font = Resources.Load<TMP_FontAsset>("Beon SDF No-Glow");
+            LabelLG.alignment = TextAlignmentOptions.Center;
+            LabelLG.rectTransform.position = menuPosition + new Vector3(2.5f, -0.2f, 0f);
+            LabelLG.rectTransform.rotation = Quaternion.Euler(0, 60, 0);
             /////////////////////////////////////////////////////////////////////////
             
         }

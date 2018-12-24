@@ -1,62 +1,114 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using HMUI;
+using IllusionPlugin;
 using System;
-using UnityEngine.SceneManagement;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 using VRUI;
 using CustomUI.MenuButton;
+using CustomUI.Settings;
+using UnityEngine.SceneManagement;
+using CustomUI.BeatSaber;
 using CustomUI.Utilities;
 
 namespace BeFitMod
 {
-    class BeFitUI
+    class User
     {
-        private class BeFitStatsFlowCoordinator : GenericFlowCoordinator<BeFitStatsViewController, VRUIViewController, VRUIViewController> { }
-        private FlowCoordinator _flowCoordinator = null;
-        public BeFitUI()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
+        public string Name {
+            get; set;
         }
-        ~BeFitUI()
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        public string Path {
+            get; set;
         }
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+
+        public int Weight {
+            get; set;
+        }
+
+        public int WeeklyGoal {
+            get; set;
+        }
+
+        public int DailyGoal
         {
-            if(scene.name == "Menu")
+            get; set;
+        }
+
+        public int LifeCalories
+        {
+            get; set;
+        }
+
+        public int DailyCalories
+        {
+            get; set;
+        }
+
+        public int SessionCalories
+        {
+            get; set;
+        }
+    }
+
+    class BeFitUI : MonoBehaviour
+    {
+        private MainFlowCoordinator _mainFlowCoordinator;
+        public static BeFitUI _instance;
+        public BeFitListFlowCoordinator _beFitListFlowCoordinator;
+
+        internal static void OnLoad()
+        {
+            if (_instance != null)
             {
-                drawMenuButton();
-                Console.WriteLine(Plugin.modLog + "Creating BeFit Stats Button");
+                return;
             }
+            new GameObject("BeFitUI").AddComponent<BeFitUI>();
         }
-        void Awake()
+
+        private void Awake()
         {
-            //create button
+            _instance = this;
+            _mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            DontDestroyOnLoad(gameObject);
+            CreateBeFitMenuButton();
+            CreateSettingsUI();
         }
-        private void drawMenuButton()
+
+        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            MenuButtonUI.AddButton("BeFit Stats", delegate ()
-            {
-                var mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
-                if(_flowCoordinator == null)
+            if (arg0.name != "Menu") return;
+
+            _mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
+
+            CreateBeFitMenuButton();
+            CreateSettingsUI();
+        }
+
+        void CreateSettingsUI()
+        {
+            SubMenus.Settings();
+            SubMenus.PlayerProperties();
+        }
+
+        private void CreateBeFitMenuButton()
+        {
+            Console.WriteLine("here");
+            MenuButtonUI.AddButton(
+                "BeFit",
+                delegate ()
                 {
-                    var flowCoordinator = new GameObject("BeFitStatsViewController").AddComponent<BeFitStatsFlowCoordinator>();
-                    flowCoordinator.OnContentCreated = (content) =>
+                    if (_beFitListFlowCoordinator == null)
                     {
-                        content.onBackPressed = () =>
-                        {
-                            mainFlowCoordinator.InvokePrivateMethod("DismissFlowCoordinator", new object[] { flowCoordinator, null, false });
-
-                        };
-                        return "Be Fit Values Set";
-                    };
-
-                }
-            }
+                        _beFitListFlowCoordinator = new GameObject("BeFitListFlowCoordinator").AddComponent<BeFitListFlowCoordinator>();
+                        _beFitListFlowCoordinator.mainFlowCoordinator = _mainFlowCoordinator;
+                    }
+                    _mainFlowCoordinator.InvokePrivateMethod("PresentFlowCoordinator", new object[] { _beFitListFlowCoordinator, null, false, false });
+                });
+            Console.WriteLine("Is the problem");
         }
-        private void menuButtonClicked()
-        {
-
-        }
-
     }
 }

@@ -3,10 +3,11 @@ using System.IO;
 
 namespace BeFitMod
 {
-    public class Config
+    public class UserConfigs
     {
         public string FilePath { get; }
         public bool BeFitPluginEnabled = true;
+        public string name = "Player1";
         public int lifeCalories = 0;
         public int dailyCalories = 0;
         public int sessionCalories = 0;
@@ -23,12 +24,14 @@ namespace BeFitMod
         public bool displayWeightOnLaunch = true;
         public bool metricUnits = false;
 
-        public event Action<Config> ConfigChangedEvent;
 
-        private readonly FileSystemWatcher _configWatcher;
+        public event Action<UserConfigs> UserConfigsChangedEvent;
+
+
+        private readonly FileSystemWatcher _userConfigsWatcher;
         private bool _saving;
 
-        public Config(string filePath)
+        public UserConfigs(string filePath)
         {
             FilePath = filePath;
             if (File.Exists(FilePath))
@@ -42,34 +45,34 @@ namespace BeFitMod
                 Save();
             }
 
-            _configWatcher = new FileSystemWatcher(Environment.CurrentDirectory)
+            _userConfigsWatcher = new FileSystemWatcher(Environment.CurrentDirectory)
             {
                 NotifyFilter = NotifyFilters.LastWrite,
-                Filter = "befit.cfg",
+                Filter = name + ".cfg",
                 EnableRaisingEvents = true
             };
-            _configWatcher.Changed += ConfigWatcherOnChanged;
+            _userConfigsWatcher.Changed += UserConfigsWatcherOnChanged;
 
             }
-        ~Config()
+        ~UserConfigs()
         {
-            _configWatcher.Changed -= ConfigWatcherOnChanged;
+            _userConfigsWatcher.Changed -= UserConfigsWatcherOnChanged;
 
         }
         public void Save()
         {
             _saving = true;
             ConfigSerializer.SaveConfig(this, FilePath);
-            Console.WriteLine(Plugin.modLog + "BeFit Config Saved");
+            Console.WriteLine(Plugin.modLog + "BeFit UserConfigs Saved");
 
         }
         public void Load()
         {
             ConfigSerializer.LoadConfig(this, FilePath);
-            Console.WriteLine(Plugin.modLog + "BeFit Config Loaded");
+            Console.WriteLine(Plugin.modLog + "BeFit UserConfigs Loaded");
         }
 
-        private void ConfigWatcherOnChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
+        private void UserConfigsWatcherOnChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
         {
             if(_saving)
             {
@@ -79,9 +82,9 @@ namespace BeFitMod
 
             Load();
 
-            if(ConfigChangedEvent != null)
+            if(UserConfigsChangedEvent != null)
             {
-                ConfigChangedEvent(this);
+                UserConfigsChangedEvent(this);
 
             }
         }
